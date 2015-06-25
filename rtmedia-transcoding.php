@@ -10,11 +10,22 @@
   Author URI: http://rtcamp.com/?utm_source=dashboard&utm_medium=plugin&utm_campaign=rtmedia-transcoding
  */
 
+/*
+ * Plugin main file
+ * @package RTMedia_Transcoding
+ * @since   1.0
+ */
+
+if( !defined( 'ABSPATH' ) ){
+	die();
+}
+
 if ( ! defined( 'RTMEDIA_TRANSCODING_PATH' ) ) {
 
 	/**
-	 *  The server file system path to the plugin directory
+	 * Define server file system path to the plugin directory
 	 *
+	 * @since 1.0
 	 */
 	define( 'RTMEDIA_TRANSCODING_PATH', plugin_dir_path( __FILE__ ) );
 }
@@ -22,8 +33,9 @@ if ( ! defined( 'RTMEDIA_TRANSCODING_PATH' ) ) {
 if ( ! defined( 'RTMEDIA_TRANSCODING_URL' ) ) {
 
 	/**
-	 * The url to the plugin directory
+	 * Define url to the plugin directory
 	 *
+	 * @since 1.0
 	 */
 	define( 'RTMEDIA_TRANSCODING_URL', plugin_dir_url( __FILE__ ) );
 }
@@ -31,8 +43,37 @@ if ( ! defined( 'RTMEDIA_TRANSCODING_URL' ) ) {
 if ( ! defined( 'RTMEDIA_TRANSCODING_BASE_NAME' ) ) {
 
 	/**
-	 * The url to the plugin directory
+	 * Define base name of plugin
 	 *
+	 * @since 1.0
 	 */
 	define( 'RTMEDIA_TRANSCODING_BASE_NAME', plugin_basename( __FILE__ ) );
 }
+
+if ( ! defined( 'RTMEDIA_TRANSCODING_VERSION' ) ) {
+
+	/**
+	 * Define base name of plugin
+	 *
+	 * @since 1.0
+	 */
+	define( 'RTMEDIA_TRANSCODING_VERSION', '0.1' );
+}
+
+
+/*
+ * include plugin main class file
+ */
+require_once RTMEDIA_TRANSCODING_PATH . 'includes/class-rtmedia-transcoding.php';
+
+/*
+ * Let's rock n roll !
+ *
+ * @since 1.0
+ */
+function run_rtmedia_transcoding() {
+	$plugin = new RTMedia_Transcoding();
+	$plugin->run();
+}
+
+run_rtmedia_transcoding();
