@@ -1,0 +1,19 @@
+=== rtMedia Transcoding ===
+Contributors: rtcamp, rittesh.patel, rahul286
+Donate link: http://rtcamp.com/donate/
+Tags: transcoding, converter, encoding, media, multimedia, rtMedia, WordPress
+License: GPLv2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Requires at least: WordPress 3.6
+Tested up to: WordPress 4.2.2
+Stable tag: 0.1
+
+Transcode audio and video files into suitable format for web browsers
+
+== Description ==
+
+rtMedia Transcoding will transcode audio and video files using media-node.
+
+== Screenshots ==
+
+== Changelog ==
