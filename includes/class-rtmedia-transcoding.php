@@ -74,6 +74,11 @@ class RTMedia_Transcoding {
 		 */
 		require_once( RTMEDIA_TRANSCODING_PATH . 'admin/class-rtmedia-transcoding-admin.php' );
 
+		/*
+		 * The class responsible for settings page content
+		 */
+		require_once( RTMEDIA_TRANSCODING_PATH . 'admin/class-rtmedia-transcoding-admin-settings.php' );
+
 		$this->loader = new RTMedia_Transcoding_Loader();
 	}
 
@@ -86,6 +91,8 @@ class RTMedia_Transcoding {
 	 */
 	private function define_admin_hooks() {
 		$plugin_admin = new RTMedia_Transcoding_Admin( $this->get_plugin_name(), RTMEDIA_TRANSCODING_VERSION );
+		$this->loader->add_action( 'admin_menu', $plugin_admin, 'rtmedia_transcoding_add_page' );
+		$this->loader->add_action( 'admin_init', $plugin_admin, 'admin_init' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 	}

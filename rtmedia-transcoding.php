@@ -60,6 +60,16 @@ if ( ! defined( 'RTMEDIA_TRANSCODING_VERSION' ) ) {
 	define( 'RTMEDIA_TRANSCODING_VERSION', '0.1' );
 }
 
+if ( ! defined( 'RTMEDIA_TRANSCODING_TEXT_DOMAIN' ) ) {
+
+	/**
+	 * Define base name of plugin
+	 *
+	 * @since 1.0
+	 */
+	define( 'RTMEDIA_TRANSCODING_TEXT_DOMAIN', 'rtmedia-transcoding' );
+}
+
 
 /*
  * include plugin main class file

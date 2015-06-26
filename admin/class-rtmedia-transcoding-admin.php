@@ -6,7 +6,7 @@
  * @since 1.0
  *
  * @package     RTMedia_Transcoding
- * #subpackage RTMedia_Transcoding/admin
+ * @subpackage RTMedia_Transcoding/admin
  */
 
 /**
@@ -38,6 +38,15 @@ class RTMedia_Transcoding_Admin {
 	 */
 	private $version;
 
+	/*
+	 * Settings page class object
+	 *
+	 * @since   1.0
+	 * @access  public
+	 * @var     object @settings_page
+	 */
+	public $settings_page;
+
 
 	/**
 	 * Initialize the class and set its properties.
@@ -48,6 +57,26 @@ class RTMedia_Transcoding_Admin {
 	public function __construct( $plugin_name, $version ) {
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
+		$this->settings_page = new RTMedia_Transcoding_Admin_Settings();
+	}
+
+	/*
+	 * Add plugin settings page
+	 *
+	 * @since   1.0
+	 */
+	public function rtmedia_transcoding_add_page() {
+		add_options_page( __( 'Transcoding Settings', RTMEDIA_TRANSCODING_TEXT_DOMAIN ), __( 'Transcoding Settings', RTMEDIA_TRANSCODING_TEXT_DOMAIN ), 'manage_options', 'rtmedia-transcoding-settings', array( $this, 'settings_page' ) );
+	}
+
+	/*
+	 * admin_init functions
+	 * register settings and add settings sections and fields
+	 *
+	 * @since   1.0
+	 */
+	public function admin_init() {
+
 	}
 
 	/**
@@ -56,7 +85,7 @@ class RTMedia_Transcoding_Admin {
 	 * @since    1.0
 	 */
 	public function enqueue_styles() {
-		wp_enqueue_style( $this->plugin_name, RTMEDIA_TRANSCODING_URL . 'admin/css/plugin-name-admin.css', array(), $this->version );
+		wp_enqueue_style( $this->plugin_name, RTMEDIA_TRANSCODING_URL . 'admin/css/rtmedia-transcoding-admin.css', array(), $this->version );
 	}
 
 	/**
@@ -65,6 +94,16 @@ class RTMedia_Transcoding_Admin {
 	 * @since    1.0
 	 */
 	public function enqueue_scripts() {
-		wp_enqueue_script( $this->plugin_name, RTMEDIA_TRANSCODING_URL . 'admin/js/plugin-name-admin.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->plugin_name, RTMEDIA_TRANSCODING_URL . 'admin/js/rtmedia-transcoding-admin.js', array( 'jquery' ), $this->version, false );
+	}
+
+	/*
+	 * Settings page content
+	 *
+	 * @since   1.0
+	 * @access  public
+	 */
+	public function settings_page() {
+		$this->settings_page->render();
 	}
 }
