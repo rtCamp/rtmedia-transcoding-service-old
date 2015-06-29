@@ -93,6 +93,10 @@ class RTMedia_Transcoding {
 		$plugin_admin = new RTMedia_Transcoding_Admin( $this->get_plugin_name(), RTMEDIA_TRANSCODING_VERSION );
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'rtmedia_transcoding_add_page' );
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'admin_init' );
+		$this->loader->add_action( 'admin_init', $plugin_admin->settings_page, 'save_api_key' );
+		$this->loader->add_action( 'wp_ajax_rtmedia_free_encoding_subscribe', $plugin_admin->settings_page, 'free_encoding_subscribe' );
+		$this->loader->add_action( 'wp_ajax_rtm_disable_transcoding', $plugin_admin->settings_page, 'disable_encoding' );
+		$this->loader->add_action( 'wp_ajax_rtm_enable_transcoding', $plugin_admin->settings_page, 'enable_encoding' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 	}
