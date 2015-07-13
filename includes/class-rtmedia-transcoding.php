@@ -30,6 +30,7 @@ class RTMedia_Transcoding {
 	 * @var      RTMedia_Transcoding_Loader $loader Maintains and registers all hooks for the plugin.
 	 */
 	protected $loader;
+
 	/**
 	 * The unique identifier of this plugin.
 	 *
@@ -63,6 +64,7 @@ class RTMedia_Transcoding {
 	 */
 	private function load_dependencies() {
 
+		require_once( RTMEDIA_TRANSCODING_PATH . 'includes/rtmedia-transcoding-functions.php' );
 		/**
 		 * The class responsible for orchestrating the actions and filters of the
 		 * core plugin.
@@ -78,6 +80,11 @@ class RTMedia_Transcoding {
 		 * The class responsible for settings page content
 		 */
 		require_once( RTMEDIA_TRANSCODING_PATH . 'admin/class-rtmedia-transcoding-admin-settings.php' );
+
+		/*
+		 * The class responsible for all the core functionality
+		 */
+		require_once( RTMEDIA_TRANSCODING_PATH . 'includes/class-rtmedia-transcoding-process.php' );
 
 		$this->loader = new RTMedia_Transcoding_Loader();
 	}
@@ -99,6 +106,10 @@ class RTMedia_Transcoding {
 		$this->loader->add_action( 'wp_ajax_rtm_enable_transcoding', $plugin_admin->settings_page, 'enable_encoding' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+	}
+
+	private function define_process_hooks(){
+		$process = new RTMedia_Transcoding_Process();
 	}
 
 	/**

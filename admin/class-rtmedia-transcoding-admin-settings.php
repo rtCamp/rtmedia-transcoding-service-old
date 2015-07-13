@@ -58,14 +58,14 @@ class RTMedia_Transcoding_Admin_Settings {
 	 * Initialize class variables
 	 */
 	public function __construct() {
-		$this->api_key = get_site_option( 'rtmedia-encoding-api-key' );
-		$this->stored_api_key = get_site_option( 'rtmedia-encoding-api-key-stored' );
+		$this->api_key = rtmedia_transcoding_get_api_key();
+		$this->stored_api_key = rtmedia_transcoding_get_option( 'rtmedia-encoding-api-key-stored' );
 
 		if ( $this->api_key ) {
 			// store api key as different db key if user disable encoding service
 			if ( ! $this->stored_api_key ) {
 				$this->stored_api_key = $this->api_key;
-				update_site_option( 'rtmedia-encoding-api-key-stored', $this->stored_api_key );
+				rtmedia_transcoding_update_option( 'rtmedia-encoding-api-key-stored', $this->stored_api_key );
 			}
 		}
 	}
@@ -263,7 +263,7 @@ class RTMedia_Transcoding_Admin_Settings {
 				wp_remote_post( $unsubscribe_url, array( 'timeout' => 120, 'body' => array( 'note' => 'Direct URL Input (API Key: ' . $_GET[ 'apikey' ] . ')' ) ) );
 			}
 
-			update_site_option( 'rtmedia-encoding-api-key', $_GET[ 'apikey' ] );
+			rtmedia_transcoding_update_api_key( $_GET[ 'apikey' ] );
 
 			$usage_info = $this->update_usage( $_GET[ 'apikey' ] );
 			$return_page = esc_url( add_query_arg( array( 'page' => 'rtmedia-addons', 'api_key_updated' => $usage_info->plan->name ), admin_url( 'admin.php' ) ) );
@@ -296,7 +296,7 @@ class RTMedia_Transcoding_Admin_Settings {
 
 	public function disable_encoding() {
 		if( wp_verify_nonce( $_REQUEST['nonce'], 'rtm_transcoding_settings_nonce' ) ){
-			update_site_option( 'rtmedia-encoding-api-key', '' );
+			rtmedia_transcoding_update_api_key( '' );
 			_e( 'Encoding disabled successfully.', RTMEDIA_TRANSCODING_TEXT_DOMAIN );
 		} else {
 			_e( 'Encoding disabled successfully.', RTMEDIA_TRANSCODING_TEXT_DOMAIN );
@@ -306,7 +306,7 @@ class RTMedia_Transcoding_Admin_Settings {
 	}
 
 	function enable_encoding(){
-		update_site_option( 'rtmedia-encoding-api-key', $this->stored_api_key );
+		rtmedia_transcoding_update_api_key( $this->stored_api_key );
 		_e( 'Encoding enabled successfully.', RTMEDIA_TRANSCODING_TEXT_DOMAIN );
 		die();
 	}

@@ -47,7 +47,6 @@ class RTMedia_Transcoding_Admin {
 	 */
 	public $settings_page;
 
-
 	/**
 	 * Initialize the class and set its properties.
 	 *
