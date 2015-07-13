@@ -77,6 +77,9 @@ class RTMedia_Transcoding_Admin_Settings {
 		?>
 		<h2><?php _e( 'Audio/Video encoding service', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></h2>
 		<div class="wrap rtm-transcoding-settings">
+			<?php
+				wp_nonce_field( 'rtm_transcoding_settings_nonce', 'rtm_transcoding_settings_nonce' );
+			?>
 			<div>
 				<label for="new-api-key"><?php _e( 'Enter API KEY', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></label>
 				<input id="new-api-key" type="text" name="new-api-key" value="<?php echo $this->stored_api_key; ?>" size="60"/>
@@ -292,8 +295,13 @@ class RTMedia_Transcoding_Admin_Settings {
 	}
 
 	public function disable_encoding() {
-		update_site_option( 'rtmedia-encoding-api-key', '' );
-		_e( 'Encoding disabled successfully.', RTMEDIA_TRANSCODING_TEXT_DOMAIN );
+		if( wp_verify_nonce( $_REQUEST['nonce'], 'rtm_transcoding_settings_nonce' ) ){
+			update_site_option( 'rtmedia-encoding-api-key', '' );
+			_e( 'Encoding disabled successfully.', RTMEDIA_TRANSCODING_TEXT_DOMAIN );
+		} else {
+			_e( 'Encoding disabled successfully.', RTMEDIA_TRANSCODING_TEXT_DOMAIN );
+		}
+
 		die();
 	}
 
@@ -304,28 +312,36 @@ class RTMedia_Transcoding_Admin_Settings {
 	}
 
 	public function free_encoding_subscribe() {
-		$email = get_site_option( 'admin_email' );
-		$usage_details = get_site_option( 'rtmedia-encoding-usage' );
-		if ( isset( $usage_details[ $this->api_key ]->plan->name ) && (strtolower( $usage_details[ $this->api_key ]->plan->name ) == 'free') ) {
-			echo json_encode( array( 'error' => 'Your free subscription is already activated.' ) );
-		} else {
-			$free_subscription_url = esc_url_raw( add_query_arg( array( 'email' => urlencode( $email ) ), trailingslashit( $this->api_url ) . 'api/free/' ) );
-			if ( $this->api_key ) {
-				$free_subscription_url = esc_url_raw( add_query_arg( array( 'email' => urlencode( $email ), 'apikey' => $this->api_key ), $free_subscription_url ) );
-			}
-			$free_subscribe_page = wp_remote_get( $free_subscription_url, array( 'timeout' => 120 ) );
-			if ( ! is_wp_error( $free_subscribe_page ) && ( ! isset( $free_subscribe_page[ 'headers' ][ 'status' ] ) || (isset( $free_subscribe_page[ 'headers' ][ 'status' ] ) && ($free_subscribe_page[ 'headers' ][ 'status' ] == 200))) ) {
-				$subscription_info = json_decode( $free_subscribe_page[ 'body' ] );
-				if ( isset( $subscription_info->status ) && $subscription_info->status ) {
-					echo json_encode( array( 'apikey' => $subscription_info->apikey ) );
-				} else {
-					echo json_encode( array( 'error' => $subscription_info->message ) );
-				}
+		if( wp_verify_nonce( $_REQUEST['nonce'], 'rtm_transcoding_settings_nonce' ) ){
+			$email = get_site_option( 'admin_email' );
+			$usage_details = get_site_option( 'rtmedia-encoding-usage' );
+			if ( isset( $usage_details[ $this->api_key ]->plan->name ) && (strtolower( $usage_details[ $this->api_key ]->plan->name ) == 'free') ) {
+				echo json_encode( array( 'error' => 'Your free subscription is already activated.' ) );
 			} else {
-				echo json_encode( array( 'error' => __( 'Something went wrong please try again.' ) ) );
+				$free_subscription_url = esc_url_raw( add_query_arg( array( 'email' => urlencode( $email ) ), trailingslashit( $this->api_url ) . 'api/free/' ) );
+				if ( $this->api_key ) {
+					$free_subscription_url = esc_url_raw( add_query_arg( array( 'email' => urlencode( $email ), 'apikey' => $this->api_key ), $free_subscription_url ) );
+				}
+				$free_subscribe_page = wp_remote_get( $free_subscription_url, array( 'timeout' => 120 ) );
+				if ( ! is_wp_error( $free_subscribe_page ) && ( ! isset( $free_subscribe_page[ 'headers' ][ 'status' ] ) || (isset( $free_subscribe_page[ 'headers' ][ 'status' ] ) && ($free_subscribe_page[ 'headers' ][ 'status' ] == 200))) ) {
+					$subscription_info = json_decode( $free_subscribe_page[ 'body' ] );
+					if ( isset( $subscription_info->status ) && $subscription_info->status ) {
+						echo json_encode( array( 'apikey' => $subscription_info->apikey ) );
+					} else {
+						echo json_encode( array( 'error' => $subscription_info->message ) );
+					}
+				} else {
+					echo json_encode( array( 'error' => __( 'Something went wrong please try again.' ) ) );
+				}
 			}
+		} else {
+			echo json_encode( array( 'error' => $this->nonce_verification_fail_message() ) );
 		}
 		die();
+	}
+
+	public function nonce_verification_fail_message(){
+		return __( 'Cheating huh !', RTMEDIA_TRANSCODING_TEXT_DOMAIN );
 	}
 
 }
