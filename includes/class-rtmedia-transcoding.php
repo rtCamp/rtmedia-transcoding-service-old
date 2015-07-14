@@ -54,6 +54,7 @@ class RTMedia_Transcoding {
 		$this->plugin_name = 'rtmedia-transcoding';
 		$this->load_dependencies();
 		$this->define_admin_hooks();
+		$this->define_process_hooks();
 	}
 
 	/*
@@ -108,8 +109,29 @@ class RTMedia_Transcoding {
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 	}
 
+	/*
+	 * Register all the hooks related to transcoding process
+	 *
+	 * @since   1.0
+	 * @access  private
+	 */
 	private function define_process_hooks(){
 		$process = new RTMedia_Transcoding_Process();
+
+		/*
+		 * Hook into wp_generate_attachment_metadata to process the file for transcoding
+		 *
+		 * Here, we could have used add_attchment hook as well but some plugin like Amazon S3
+		 * hook into "wp_generate_attachment_metadata" and sends file to S3, it is possible that during this time
+		 * file might have deleted from local server. We could change it in some hook which gets fired after attachment
+		 * meta data has been generated.
+		 */
+		$this->loader->add_filter( 'wp_generate_attachment_metadata', $process, 'do_transcoding', 999, 2 );
+
+		/*
+		 * Hook into "init" action to handle the call back from transcoding server.
+		 */
+		$this->loader->add_action( 'init', $process, 'handle_callback' );
 	}
 
 	/**
