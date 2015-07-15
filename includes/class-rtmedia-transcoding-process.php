@@ -28,11 +28,19 @@ class RTMedia_Transcoding_Process {
 	protected $api_url = 'http://api.rtcamp.com/';
 
 	/*
+	 * It will be in use while handling the callback from transcoding server to store the already attached file info
+	 *
+	 * @since   1.0
+	 * @access  public
+	 */
+	public $post_obj;
+
+	/*
 	 * Send file to transcoding server
 	 *
 	 * @since   1.0
 	 */
-	function do_transcoding( $data, $post_id ) {
+	public function do_transcoding( $data, $post_id ) {
 
 		// get api key
 		$api_key = rtmedia_transcoding_get_api_key();
@@ -96,8 +104,46 @@ class RTMedia_Transcoding_Process {
 	 *
 	 * @since   1.0
 	 */
-	function handle_callback() {
+	public function handle_callback() {
+		// Check if request is from transcoding server or not
+		if ( isset( $_REQUEST[ 'job_id' ] ) && isset( $_REQUEST[ 'rt_id' ] ) && isset( $_REQUEST[ 'download_url' ] ) ) {
 
+			require_once ( ABSPATH . 'wp-admin/includes/image.php');
+			$job_id = $_REQUEST[ 'job_id' ];
+			$post_id = $_REQUEST[ 'rt_id' ];
+			$download_url = $_REQUEST[ 'download_url' ];
+			$thumbs = ( isset( $_REQUEST[ 'thumbs' ] ) ) ? $_REQUEST[ 'thumbs' ] : array();
+			$file_bits = false;
+
+			// remove all filters for attachment url and attachment file
+			remove_all_filters( 'wp_get_attachment_url' );
+			remove_all_filters( 'get_attached_file' );
+
+			// save post object in member variable for future reference
+			$this->post_obj = get_post( $post_id );
+			$this->post_obj->attached_file = get_attached_file( $post_id );
+			$this->post_obj->file_url = wp_get_attachment_url( $post_id );
+
+			// download transcoded file
+			try {
+				$file_bits = file_get_contents( $download_url );
+			} catch ( Exception $e ) {
+				$flag = $e->getMessage();
+			}
+
+			if( $file_bits ){
+				// delete attached file
+				$this->delete_old_attached_file( $post_id );
+				// change upload dir
+				add_filter( 'upload_dir', array( $this, 'modify_upload_dir' ) );
+				// upload the file
+				// update post
+				// save video thumbs and update post meta
+				remove_filter( 'upload_dir', array( $this, 'modify_upload_dir' ) );
+			} else {
+
+			}
+		}
 	}
 
 	/*
@@ -106,7 +152,7 @@ class RTMedia_Transcoding_Process {
 	 * @since   1.0
 	 * @return  boolean
 	 */
-	function is_under_usage_quota( $api_key = false ) {
+	public function is_under_usage_quota( $api_key = false ) {
 
 		$under_quota = false;
 		$usage_info = rtmedia_transcoding_get_option( 'rtmedia-encoding-usage' );
@@ -130,7 +176,7 @@ class RTMedia_Transcoding_Process {
 	 * @since   1.0
 	 * @return string
 	 */
-	function update_usage_quota( $api_key = false ) {
+	public function update_usage_quota( $api_key = false ) {
 		if ( ! $api_key ) {
 			$api_key = rtmedia_transcoding_get_api_key();
 		}
@@ -147,5 +193,39 @@ class RTMedia_Transcoding_Process {
 		update_site_option( 'rtmedia-encoding-usage', array( $api_key => $usage_info ) );
 
 		return $usage_info;
+	}
+
+	/*
+	 * Delete attached file
+	 *
+	 * @since   1.0
+	 */
+	public function delete_old_attached_file( $post_id ){
+
+		// Call of action before deleting attached file
+		do_action( 'rtmedia_transcoding_before_delete_attached_file', $post_id );
+
+		unlink( $this->post_obj->attached_file );
+
+		// Call of action after deleting attached file
+		do_action( 'rtmedia_transcoding_after_delete_attached_file', $post_id );
+	}
+
+	/*
+	 * Modify upload directory as per the old file
+	 * Hooked into 'upload_dir'
+	 *
+	 * @since   1.0
+	 * @return  string
+	 */
+	public function modify_upload_dir( $up_dir ){
+		/*
+		 * replace path and url with the new value
+		 * Basically, remove file name from path and URL
+		 */
+		$up_dir[ 'path' ] = str_replace( basename( $this->post_obj->attached_file ), '', $this->post_obj->attached_file );
+		$up_dir[ 'url' ] = str_replace( basename( $this->post_obj->file_url ), '', $this->post_obj->file_url );
+
+		return $up_dir;
 	}
 }
