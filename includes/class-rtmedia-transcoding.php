@@ -65,6 +65,9 @@ class RTMedia_Transcoding {
 	 */
 	private function load_dependencies() {
 
+		/*
+		 * This file contains the common helper functions.
+		 */
 		require_once( RTMEDIA_TRANSCODING_PATH . 'includes/rtmedia-transcoding-functions.php' );
 		/**
 		 * The class responsible for orchestrating the actions and filters of the
