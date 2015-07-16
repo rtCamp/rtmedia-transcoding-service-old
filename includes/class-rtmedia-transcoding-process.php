@@ -108,11 +108,11 @@ class RTMedia_Transcoding_Process {
 		// Check if request is from transcoding server or not
 		if ( isset( $_REQUEST[ 'job_id' ] ) && isset( $_REQUEST[ 'rt_id' ] ) && isset( $_REQUEST[ 'download_url' ] ) ) {
 
-			require_once ( ABSPATH . 'wp-admin/includes/image.php');
+			require_once( ABSPATH . 'wp-admin/includes/image.php' );
 			$post_id = $_REQUEST[ 'rt_id' ];
 			$download_url = $_REQUEST[ 'download_url' ];
 			$thumbs = ( isset( $_REQUEST[ 'thumbs' ] ) ) ? $_REQUEST[ 'thumbs' ] : array();
-			$request_type = isset( $_REQUEST['format'] ) ? $_REQUEST['format'] : false;
+			$request_type = isset( $_REQUEST[ 'format' ] ) ? $_REQUEST[ 'format' ] : false;
 			$file_bits = false;
 
 			// remove all filters for attachment url and attachment file
@@ -128,7 +128,7 @@ class RTMedia_Transcoding_Process {
 			$this->save_media_thumbnails( $post_id, $thumbs );
 
 			// If request is for thumb than no need to proceed
-			if( $request_type && $request_type == 'thumbnails' ){
+			if ( $request_type && $request_type == 'thumbnails' ) {
 				die();
 			}
 			// get file type and path info
@@ -138,11 +138,11 @@ class RTMedia_Transcoding_Process {
 			// download transcoded file
 			try {
 				$file_bits = file_get_contents( $download_url );
-			} catch ( Exception $e ) {
+			} catch( Exception $e ) {
 				$flag = $e->getMessage();
 			}
 
-			if( $file_bits ){
+			if ( $file_bits ) {
 				// delete attached file
 				$this->delete_old_attached_file( $post_id );
 				// change upload dir
@@ -155,7 +155,7 @@ class RTMedia_Transcoding_Process {
 				$post_update_array = array(
 					'ID' => $post_id,
 					'guid' => $upload_info[ 'url' ],
-					'post_mime_type' => $file_type['type'],
+					'post_mime_type' => $file_type[ 'type' ],
 				);
 				wp_update_post( $post_update_array );
 
@@ -169,7 +169,7 @@ class RTMedia_Transcoding_Process {
 
 				do_action( 'after_rtmedia_transcoding_done', $post_id );
 			} else {
-				error_log( 'rtMedia Transcoding: Could not read the file: ' . $post_id  );
+				error_log( 'rtMedia Transcoding: Could not read the file: ' . $post_id );
 			}
 
 			// update usage quota
@@ -231,7 +231,7 @@ class RTMedia_Transcoding_Process {
 	 *
 	 * @since   1.0
 	 */
-	public function delete_old_attached_file( $post_id ){
+	public function delete_old_attached_file( $post_id ) {
 
 		// Call of action before deleting attached file
 		do_action( 'rtmedia_transcoding_before_delete_attached_file', $post_id );
@@ -249,7 +249,7 @@ class RTMedia_Transcoding_Process {
 	 * @since   1.0
 	 * @return  string
 	 */
-	public function modify_upload_dir( $up_dir ){
+	public function modify_upload_dir( $up_dir ) {
 		/*
 		 * replace path and url with the new value
 		 * Basically, remove file name from path and URL
@@ -265,16 +265,16 @@ class RTMedia_Transcoding_Process {
 	 *
 	 * @since   1.0
 	 */
-	public function save_media_thumbnails( $post_id, $thumbs ){
+	public function save_media_thumbnails( $post_id, $thumbs ) {
 		// those thumbs may be in serialize form
 		$thumbs = maybe_unserialize( $thumbs );
 
-		if( ! empty( $thumbs ) && is_array( $thumbs ) ){
+		if ( ! empty( $thumbs ) && is_array( $thumbs ) ) {
 
 			$post_thumbs = array();
 
 			// loop through each thumb and save them
-			foreach( $thumbs as $single_thumb ){
+			foreach( $thumbs as $single_thumb ) {
 
 				// get thumb from remote
 				$remote_thumb = wp_remote_get( $single_thumb );
@@ -287,7 +287,7 @@ class RTMedia_Transcoding_Process {
 				// upload thumb file
 				$thumb_upload_info = wp_upload_bits( $thumb_file_name, null, $thumb_body );
 
-				$post_thumbs[] = $thumb_upload_info['url'];
+				$post_thumbs[] = $thumb_upload_info[ 'url' ];
 			}
 
 			// save media thumb details into post meta
