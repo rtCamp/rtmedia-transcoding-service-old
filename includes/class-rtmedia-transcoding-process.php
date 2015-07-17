@@ -82,7 +82,7 @@ class RTMedia_Transcoding_Process {
 					$upload_res = wp_remote_get( $upload_url );
 
 					// save response in post meta
-					if ( ! is_wp_error( $upload_res ) && wp_remote_retrieve_header( $upload_res, 'status' ) == '200' ) {
+					if ( ! is_wp_error( $upload_res ) && (int) wp_remote_retrieve_response_code( $upload_res ) == 200 ) {
 						$upload_info = wp_remote_retrieve_body( $upload_res );
 						if ( isset( $upload_info->status ) && $upload_info->status && isset( $upload_info->job_id ) && $upload_info->job_id ) {
 							$job_id = $upload_info->job_id;
@@ -218,10 +218,7 @@ class RTMedia_Transcoding_Process {
 		$usage_url = trailingslashit( $this->api_url ) . 'api/usage/' . $api_key;
 		$usage_res = wp_remote_get( $usage_url, array( 'timeout' => 20 ) );
 
-		//todo why need to check for both the "200" and "200 OK" header status ?
-		if ( ! is_wp_error( $usage_res )
-			&& ( wp_remote_retrieve_header( $usage_res, 'status' ) == '200' || wp_remote_retrieve_header( $usage_res, 'status' ) == '200 OK' )
-		) {
+		if ( ! is_wp_error( $usage_res ) && ( (int) wp_remote_retrieve_response_code( $usage_res ) == 200 ) ) {
 			$usage_info = json_decode( wp_remote_retrieve_body( $usage_res ) );
 		} else {
 			$usage_info = NULL;
