@@ -110,7 +110,10 @@ class RTMedia_Transcoding_Process {
 
 			require_once( ABSPATH . 'wp-admin/includes/image.php' );
 			$post_id = $_REQUEST[ 'rt_id' ];
-			$download_url = $_REQUEST[ 'download_url' ];
+
+			//todo check for valid url
+			//todo why use "urldecode" 2 times? Need to look into transcoding server response
+			$download_url = urldecode( urldecode( $_REQUEST[ 'download_url' ] ) );
 			$thumbs = ( isset( $_REQUEST[ 'thumbs' ] ) ) ? $_REQUEST[ 'thumbs' ] : array();
 			$request_type = isset( $_REQUEST[ 'format' ] ) ? $_REQUEST[ 'format' ] : false;
 			$file_bits = false;
@@ -215,8 +218,11 @@ class RTMedia_Transcoding_Process {
 		$usage_url = trailingslashit( $this->api_url ) . 'api/usage/' . $api_key;
 		$usage_res = wp_remote_get( $usage_url, array( 'timeout' => 20 ) );
 
-		if ( ! is_wp_error( $usage_res ) && wp_remote_retrieve_header( $usage_res, 'status' ) == '200' ) {
-			$usage_info = wp_remote_retrieve_body( $usage_res );
+		//todo why need to check for both the "200" and "200 OK" header status ?
+		if ( ! is_wp_error( $usage_res )
+			&& ( wp_remote_retrieve_header( $usage_res, 'status' ) == '200' || wp_remote_retrieve_header( $usage_res, 'status' ) == '200 OK' )
+		) {
+			$usage_info = json_decode( wp_remote_retrieve_body( $usage_res ) );
 		} else {
 			$usage_info = NULL;
 		}
