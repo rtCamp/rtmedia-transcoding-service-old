@@ -106,6 +106,8 @@ class RTMedia_Transcoding_Process {
 	 */
 	public function handle_callback() {
 		// Check if request is from transcoding server or not
+
+		//todo check for valid response, may be use job_id or API key here and check for host
 		if ( isset( $_REQUEST[ 'job_id' ] ) && isset( $_REQUEST[ 'rt_id' ] ) && isset( $_REQUEST[ 'download_url' ] ) ) {
 
 			require_once( ABSPATH . 'wp-admin/includes/image.php' );

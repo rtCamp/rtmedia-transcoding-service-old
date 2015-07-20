@@ -75,106 +75,108 @@ class RTMedia_Transcoding_Admin_Settings {
 	 */
 	public function render() {
 		?>
-		<h2><?php _e( 'Audio/Video encoding service', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></h2>
-		<div class="wrap rtm-transcoding-settings">
-			<?php
-				wp_nonce_field( 'rtm_transcoding_settings_nonce', 'rtm_transcoding_settings_nonce' );
-			?>
-			<div>
-				<label for="new-api-key"><?php _e( 'Enter API KEY', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></label>
-				<input id="new-api-key" type="text" name="new-api-key" value="<?php echo $this->stored_api_key; ?>" size="60"/>
-				<input type="submit" id="api-key-submit" name="api-key-submit" value="<?php echo __( 'Save Key', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?>" class="button-primary"/>
-				<div class="rtm-transcoding-new-key-spinner spinner"></div>
-			</div>
-
-			<div>
+		<div class="wrap">
+			<h2><?php _e( 'Audio/Video encoding service', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></h2>
+			<div class="wrap rtm-transcoding-settings">
 				<?php
-				$enable_btn_style = 'style="display:none;"';
-				$disable_btn_style = 'style="display:none;"';
-				if ( $this->api_key ) {
-					$enable_btn_style = 'style="display:inline-block;"';
-				} else if ( $this->stored_api_key ) {
-					$disable_btn_style = 'style="display:inline-block;"';
-				}
+				wp_nonce_field( 'rtm_transcoding_settings_nonce', 'rtm_transcoding_settings_nonce' );
 				?>
-				<input type="submit" name="rtm-disable-transcoding" value="Disable Transcoding" class="button-secondary rtm-disable-transcoding" <?php echo $enable_btn_style; ?> />
-				<input type="submit" name="rtm-enable-transcoding" value="Enable Transcoding" class="button-secondary rtm-enable-transcoding" <?php echo $disable_btn_style; ?> />
-				<div class="rtm-enable-disable-spinner-transcoding spinner"></div>
-			</div>
+				<div class="rtm-transcoding-api-key">
+					<label for="new-api-key"><?php _e( 'Enter API KEY', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></label>
+					<input id="new-api-key" type="text" name="new-api-key" value="<?php echo $this->stored_api_key; ?>" size="60"/>
+					<input type="submit" id="api-key-submit" name="api-key-submit" value="<?php echo __( 'Save Key', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?>" class="button-primary"/>
+					<div class="rtm-transcoding-new-key-spinner spinner"></div>
+				</div>
 
-			<!-- Results table headers -->
-			<table class="fixed widefat rtm-encoding-table">
-				<thead>
-				<tr>
-					<th><?php _e( 'Feature\Plan', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></th>
-					<th><?php _e( 'Free', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></th>
-					<th><?php _e( 'Silver', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></th>
-					<th><?php _e( 'Gold', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></th>
-					<th><?php _e( 'Platinum', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></th>
-				</tr>
-				</thead>
+				<div class="rtm-transcoding-key-action">
+					<?php
+					$enable_btn_style = 'style="display:none;"';
+					$disable_btn_style = 'style="display:none;"';
+					if ( $this->api_key ) {
+						$enable_btn_style = 'style="display:inline-block;"';
+					} else if ( $this->stored_api_key ) {
+						$disable_btn_style = 'style="display:inline-block;"';
+					}
+					?>
+					<input type="submit" name="rtm-disable-transcoding" value="Disable Transcoding" class="button-secondary rtm-disable-transcoding" <?php echo $enable_btn_style; ?> />
+					<input type="submit" name="rtm-enable-transcoding" value="Enable Transcoding" class="button-secondary rtm-enable-transcoding" <?php echo $disable_btn_style; ?> />
+					<div class="rtm-enable-disable-spinner-transcoding spinner"></div>
+				</div>
 
-				<tbody>
-				<tr>
-					<th><?php _e( 'File Size Limit', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></th>
-					<td>200MB ( <del>20MB</del> ) </td>
-					<td colspan="3" class="column-posts">16GB ( <del>2GB</del> ) </td>
-				</tr>
-				<tr>
-					<th><?php _e( 'Bandwidth (monthly)', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></th>
-					<td>10GB ( <del>1GB</del> ) </td>
-					<td>100GB</td>
-					<td>1TB</td>
-					<td>10TB</td>
-				</tr>
-				<tr>
-					<th><?php _e( 'Overage Bandwidth', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></th>
-					<td><?php _e( 'Not Available', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></td>
-					<td>$0.10 per GB</td>
-					<td>$0.08 per GB</td>
-					<td>$0.05 per GB</td>
-				</tr>
-				<tr>
-					<th><?php _e( 'Amazon S3 Support', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></th>
-					<td><?php _e( 'Not Available', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></td>
-					<td colspan="3" class="column-posts"><?php _e( 'Coming Soon', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></td>
-				</tr>
-				<tr>
-					<th><?php _e( 'HD Profile', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></th>
-					<td><?php _e( 'Not Available', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></td>
-					<td colspan="3" class="column-posts"><?php _e( 'Coming Soon', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></td>
-				</tr>
-				<tr>
-					<th><?php _e( 'Webcam Recording', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></th>
-					<td colspan="4" class="column-posts"><?php _e( 'Coming Soon', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></td>
-				</tr>
-				<tr>
-					<th><?php _e( 'Pricing', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></th>
-					<td><?php _e( 'Free', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></td>
-					<td><?php _e( '$9/month', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></td>
-					<td><?php _e( '$99/month', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></td>
-					<td><?php _e( '$999/month', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></td>
-				</tr>
-				<tr>
-					<th>&nbsp;</th>
-					<td><?php
-						$usage_details = get_site_option( 'rtmedia-encoding-usage' );
-						if ( isset( $usage_details[ $this->api_key ]->plan->name ) && ( strtolower( $usage_details[ $this->api_key ]->plan->name ) == 'free' ) ) {
-							echo '<button disabled="disabled" type="submit" class="rtm-transcoding-try-now button button-primary">' . __( 'Current Plan', RTMEDIA_TRANSCODING_TEXT_DOMAIN ) . '</button>';
-						} else {
+				<!-- Results table headers -->
+				<table class="fixed widefat rtm-encoding-table">
+					<thead>
+					<tr>
+						<th><?php _e( 'Feature\Plan', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></th>
+						<th><?php _e( 'Free', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></th>
+						<th><?php _e( 'Silver', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></th>
+						<th><?php _e( 'Gold', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></th>
+						<th><?php _e( 'Platinum', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></th>
+					</tr>
+					</thead>
+
+					<tbody>
+					<tr>
+						<th><?php _e( 'File Size Limit', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></th>
+						<td>200MB ( <del>20MB</del> ) </td>
+						<td colspan="3" class="column-posts">16GB ( <del>2GB</del> ) </td>
+					</tr>
+					<tr>
+						<th><?php _e( 'Bandwidth (monthly)', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></th>
+						<td>10GB ( <del>1GB</del> ) </td>
+						<td>100GB</td>
+						<td>1TB</td>
+						<td>10TB</td>
+					</tr>
+					<tr>
+						<th><?php _e( 'Overage Bandwidth', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></th>
+						<td><?php _e( 'Not Available', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></td>
+						<td>$0.10 per GB</td>
+						<td>$0.08 per GB</td>
+						<td>$0.05 per GB</td>
+					</tr>
+					<tr>
+						<th><?php _e( 'Amazon S3 Support', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></th>
+						<td><?php _e( 'Not Available', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></td>
+						<td colspan="3" class="column-posts"><?php _e( 'Coming Soon', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></td>
+					</tr>
+					<tr>
+						<th><?php _e( 'HD Profile', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></th>
+						<td><?php _e( 'Not Available', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></td>
+						<td colspan="3" class="column-posts"><?php _e( 'Coming Soon', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></td>
+					</tr>
+					<tr>
+						<th><?php _e( 'Webcam Recording', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></th>
+						<td colspan="4" class="column-posts"><?php _e( 'Coming Soon', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></td>
+					</tr>
+					<tr>
+						<th><?php _e( 'Pricing', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></th>
+						<td><?php _e( 'Free', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></td>
+						<td><?php _e( '$9/month', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></td>
+						<td><?php _e( '$99/month', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></td>
+						<td><?php _e( '$999/month', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></td>
+					</tr>
+					<tr>
+						<th>&nbsp;</th>
+						<td><?php
+							$usage_details = get_site_option( 'rtmedia-encoding-usage' );
+							if ( isset( $usage_details[ $this->api_key ]->plan->name ) && ( strtolower( $usage_details[ $this->api_key ]->plan->name ) == 'free' ) ) {
+								echo '<button disabled="disabled" type="submit" class="rtm-transcoding-try-now button button-primary">' . __( 'Current Plan', RTMEDIA_TRANSCODING_TEXT_DOMAIN ) . '</button>';
+							} else {
+								?>
+								<form id="rtm-transcoding-try-now-form" method="get">
+								<button type="submit"
+								        class="rtm-transcoding-try-now button button-primary"><?php _e( 'Try Now', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></button>
+								</form><?php }
 							?>
-							<form id="rtm-transcoding-try-now-form" method="get">
-							<button type="submit"
-							        class="rtm-transcoding-try-now button button-primary"><?php _e( 'Try Now', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></button>
-							</form><?php }
-						?>
-					</td>
-					<td><?php echo $this->encoding_subscription_form( 'silver', 9.0 ) ?></td>
-					<td><?php echo $this->encoding_subscription_form( 'gold', 99.0 ) ?></td>
-					<td><?php echo $this->encoding_subscription_form( 'platinum', 999.0 ) ?></td>
-				</tr>
-				</tbody>
-			</table>
+						</td>
+						<td><?php echo $this->encoding_subscription_form( 'silver', 9.0 ) ?></td>
+						<td><?php echo $this->encoding_subscription_form( 'gold', 99.0 ) ?></td>
+						<td><?php echo $this->encoding_subscription_form( 'platinum', 999.0 ) ?></td>
+					</tr>
+					</tbody>
+				</table>
+			</div>
 		</div>
 	<?php
 	}

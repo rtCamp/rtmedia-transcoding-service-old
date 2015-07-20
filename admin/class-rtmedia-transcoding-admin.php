@@ -84,7 +84,8 @@ class RTMedia_Transcoding_Admin {
 	 * @since    1.0
 	 */
 	public function enqueue_styles() {
-		wp_enqueue_style( $this->plugin_name, RTMEDIA_TRANSCODING_URL . 'admin/css/rtmedia-transcoding-admin.css', array(), $this->version );
+		$suffix = ( defined( 'SCRIPT_DEBUG' ) && constant( 'SCRIPT_DEBUG' ) === true ) ? '' : '.min';
+		wp_enqueue_style( $this->plugin_name, RTMEDIA_TRANSCODING_URL . 'admin/css/rtmedia-transcoding-admin' . $suffix . '.css', array(), $this->version );
 	}
 
 	/**
@@ -93,7 +94,8 @@ class RTMedia_Transcoding_Admin {
 	 * @since    1.0
 	 */
 	public function enqueue_scripts() {
-		wp_enqueue_script( $this->plugin_name, RTMEDIA_TRANSCODING_URL . 'admin/js/rtmedia-transcoding-admin.js', array( 'jquery' ), $this->version, false );
+		$suffix = ( defined( 'SCRIPT_DEBUG' ) && constant( 'SCRIPT_DEBUG' ) === true ) ? '' : '.min';
+		wp_enqueue_script( $this->plugin_name, RTMEDIA_TRANSCODING_URL . 'admin/js/rtmedia-transcoding-admin' . $suffix . '.js', array( 'jquery' ), $this->version, false );
 	}
 
 	/*

@@ -3,3 +3,6 @@
 *.bak
 /nbproject/private/
 .idea
+.sass-cache
+*.map
+node_modules
