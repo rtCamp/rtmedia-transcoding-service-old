@@ -69,3 +69,26 @@ function rtmedia_transcoding_get_api_key( $default = false ){
 function rtmedia_transcoding_update_api_key( $key = '' ){
 	return rtmedia_transcoding_update_option( rtmedia_transcoding_get_api_key_id(), $key );
 }
+
+/*
+ * Get meta key of video thumb
+ *
+ * @since   1.0
+ *
+ * @return  string
+ */
+function rtmedia_transcoding_get_video_thumb_meta_key(){
+	return 'rtmedia_transcoding_thumbs';
+}
+
+/*
+ * Get thumbnails of video
+ *
+ * @since   1.0
+ * @param   integer $post_id
+ *
+ * @return  array
+ */
+function rtmedia_transcoding_get_video_thumbs( $post_id ){
+	return maybe_unserialize( get_post_meta( $post_id, rtmedia_transcoding_get_video_thumb_meta_key(), true ) );
+}

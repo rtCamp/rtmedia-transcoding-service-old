@@ -296,7 +296,7 @@ class RTMedia_Transcoding_Process {
 			}
 
 			// save media thumb details into post meta
-			update_post_meta( $post_id, 'rtmedia_transcoding_thumbs', $post_thumbs );
+			update_post_meta( $post_id, rtmedia_transcoding_get_video_thumb_meta_key(), $post_thumbs );
 		}
 	}
 }
