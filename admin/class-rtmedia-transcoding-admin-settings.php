@@ -77,14 +77,19 @@ class RTMedia_Transcoding_Admin_Settings {
 		?>
 		<div class="wrap">
 			<h2><?php _e( 'Audio/Video encoding service', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></h2>
+
 			<div class="wrap rtm-transcoding-settings">
 				<?php
 				wp_nonce_field( 'rtm_transcoding_settings_nonce', 'rtm_transcoding_settings_nonce' );
 				?>
 				<div class="rtm-transcoding-api-key">
 					<label for="new-api-key"><?php _e( 'Enter API KEY', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></label>
-					<input id="new-api-key" type="text" name="new-api-key" value="<?php echo $this->stored_api_key; ?>" size="60"/>
-					<input type="submit" id="api-key-submit" name="api-key-submit" value="<?php echo __( 'Save Key', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?>" class="button-primary"/>
+					<input id="new-api-key" type="text" name="new-api-key" value="<?php echo $this->stored_api_key; ?>"
+					       size="60"/>
+					<input type="submit" id="api-key-submit" name="api-key-submit"
+					       value="<?php echo __( 'Save Key', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?>"
+					       class="button-primary"/>
+
 					<div class="rtm-transcoding-new-key-spinner spinner"></div>
 				</div>
 
@@ -98,8 +103,11 @@ class RTMedia_Transcoding_Admin_Settings {
 						$disable_btn_style = 'style="display:inline-block;"';
 					}
 					?>
-					<input type="submit" name="rtm-disable-transcoding" value="Disable Transcoding" class="button-secondary rtm-disable-transcoding" <?php echo $enable_btn_style; ?> />
-					<input type="submit" name="rtm-enable-transcoding" value="Enable Transcoding" class="button-secondary rtm-enable-transcoding" <?php echo $disable_btn_style; ?> />
+					<input type="submit" name="rtm-disable-transcoding" value="Disable Transcoding"
+					       class="button-secondary rtm-disable-transcoding" <?php echo $enable_btn_style; ?> />
+					<input type="submit" name="rtm-enable-transcoding" value="Enable Transcoding"
+					       class="button-secondary rtm-enable-transcoding" <?php echo $disable_btn_style; ?> />
+
 					<div class="rtm-enable-disable-spinner-transcoding spinner"></div>
 				</div>
 
@@ -118,12 +126,21 @@ class RTMedia_Transcoding_Admin_Settings {
 					<tbody>
 					<tr>
 						<th><?php _e( 'File Size Limit', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></th>
-						<td>200MB ( <del>20MB</del> ) </td>
-						<td colspan="3" class="column-posts">16GB ( <del>2GB</del> ) </td>
+						<td>200MB (
+							<del>20MB</del>
+							)
+						</td>
+						<td colspan="3" class="column-posts">16GB (
+							<del>2GB</del>
+							)
+						</td>
 					</tr>
 					<tr>
 						<th><?php _e( 'Bandwidth (monthly)', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></th>
-						<td>10GB ( <del>1GB</del> ) </td>
+						<td>10GB (
+							<del>1GB</del>
+							)
+						</td>
 						<td>100GB</td>
 						<td>1TB</td>
 						<td>10TB</td>
@@ -138,16 +155,19 @@ class RTMedia_Transcoding_Admin_Settings {
 					<tr>
 						<th><?php _e( 'Amazon S3 Support', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></th>
 						<td><?php _e( 'Not Available', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></td>
-						<td colspan="3" class="column-posts"><?php _e( 'Coming Soon', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></td>
+						<td colspan="3"
+						    class="column-posts"><?php _e( 'Coming Soon', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></td>
 					</tr>
 					<tr>
 						<th><?php _e( 'HD Profile', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></th>
 						<td><?php _e( 'Not Available', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></td>
-						<td colspan="3" class="column-posts"><?php _e( 'Coming Soon', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></td>
+						<td colspan="3"
+						    class="column-posts"><?php _e( 'Coming Soon', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></td>
 					</tr>
 					<tr>
 						<th><?php _e( 'Webcam Recording', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></th>
-						<td colspan="4" class="column-posts"><?php _e( 'Coming Soon', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></td>
+						<td colspan="4"
+						    class="column-posts"><?php _e( 'Coming Soon', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></td>
 					</tr>
 					<tr>
 						<th><?php _e( 'Pricing', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></th>
@@ -178,25 +198,25 @@ class RTMedia_Transcoding_Admin_Settings {
 				</table>
 			</div>
 		</div>
-	<?php
+		<?php
 	}
 
 	public function encoding_subscription_form( $name = 'No Name', $price = '0', $force = false ) {
-		if ( $this->api_key ){
+		if ( $this->api_key ) {
 			$this->update_usage( $this->api_key );
 		}
 		$action = $this->sandbox_testing ? 'https://sandbox.paypal.com/cgi-bin/webscr' : 'https://www.paypal.com/cgi-bin/webscr';
 		$return_page = esc_url( add_query_arg( array( 'page' => 'rtmedia-addons' ), ( is_multisite() ? network_admin_url( 'admin.php' ) : admin_url( 'admin.php' ) ) ) );
 
 		$usage_details = get_site_option( 'rtmedia-encoding-usage' );
-		if ( isset( $usage_details[ $this->api_key ]->plan->name )
-			&& ( strtolower( $usage_details[ $this->api_key ]->plan->name ) == strtolower( $name ) )
-			&& $usage_details[ $this->api_key ]->sub_status && ! $force ) {
-			$form = '<button data-plan="' . $name . '" data-price="' . $price . '" type="submit" class="button bpm-unsubscribe">' . __( 'Unsubscribe', RTMEDIA_TRANSCODING_TEXT_DOMAIN ) . '</button>';
-			$form .= '<div id="bpm-unsubscribe-dialog" title="Unsubscribe">
-  <p>' . __( 'Just to improve our service we would like to know the reason for you to leave us.' ) . '</p>
-  <p><textarea rows="3" cols="36" id="bpm-unsubscribe-note"></textarea></p>
-</div>';
+//		if ( isset( $usage_details[ $this->api_key ]->plan->name ) && ( strtolower( $usage_details[ $this->api_key ]->plan->name ) == strtolower( $name ) ) && $usage_details[ $this->api_key ]->sub_status && ! $force ) {
+		if ( true ) {
+			$form = '<button data-plan="' . $name . '" data-price="' . $price . '" type="submit" class="button rtm-transcoding-unsubscribe">' . __( 'Unsubscribe', RTMEDIA_TRANSCODING_TEXT_DOMAIN ) . '</button>';
+			$form .= '<div class="rtm-transcoding-unsubscribe-spinner spinner"></div>';
+			$form .= '<div id="rtm-transcoding-unsubscribe-dialog" title="Unsubscribe">
+						  <p>' . __( 'Just to improve our service we would like to know the reason for you to leave us.' ) . '</p>
+						  <p><textarea rows="3" id="rtm-transcoding-unsubscribe-note"></textarea></p>
+					</div>';
 		} else {
 			$form = '<form method="post" action="' . $action . '" class="paypal-button" target="_top">
                         <input type="hidden" name="button" value="subscribe">
@@ -244,8 +264,8 @@ class RTMedia_Transcoding_Admin_Settings {
 		if ( ! is_wp_error( $usage_page ) ) {
 			$usage_info = json_decode( $usage_page[ 'body' ] );
 		} else {
-			 $usage_info = NULL;
-	    }
+			$usage_info = NULL;
+		}
 		update_site_option( 'rtmedia-encoding-usage', array( $key => $usage_info ) );
 		return $usage_info;
 	}
@@ -290,34 +310,38 @@ class RTMedia_Transcoding_Admin_Settings {
 
 	public function successfully_subscribed_notice() {
 		?>
-			<div class="updated">
-				<p><?php printf( __( 'You have successfully subscribed for the <strong>%s</strong> plan', RTMEDIA_TRANSCODING_TEXT_DOMAIN ), $_GET[ 'api_key_updated' ] ); ?></p>
-			</div>
+		<div class="updated">
+			<p><?php printf( __( 'You have successfully subscribed for the <strong>%s</strong> plan', RTMEDIA_TRANSCODING_TEXT_DOMAIN ), $_GET[ 'api_key_updated' ] ); ?></p>
+		</div>
 		<?php
 	}
 
 	public function disable_encoding() {
-		if( wp_verify_nonce( $_REQUEST['nonce'], 'rtm_transcoding_settings_nonce' ) ){
+		if ( wp_verify_nonce( $_REQUEST[ 'nonce' ], 'rtm_transcoding_settings_nonce' ) ) {
 			rtmedia_transcoding_update_api_key( '' );
-			_e( 'Encoding disabled successfully.', RTMEDIA_TRANSCODING_TEXT_DOMAIN );
+			_e( 'Transcoding service has been disabled successfully.', RTMEDIA_TRANSCODING_TEXT_DOMAIN );
 		} else {
-			_e( 'Encoding disabled successfully.', RTMEDIA_TRANSCODING_TEXT_DOMAIN );
+			$this->nonce_verification_fail_message();
 		}
 
 		die();
 	}
 
-	function enable_encoding(){
-		rtmedia_transcoding_update_api_key( $this->stored_api_key );
-		_e( 'Encoding enabled successfully.', RTMEDIA_TRANSCODING_TEXT_DOMAIN );
+	function enable_encoding() {
+		if ( wp_verify_nonce( $_REQUEST[ 'nonce' ], 'rtm_transcoding_settings_nonce' ) ) {
+			rtmedia_transcoding_update_api_key( $this->stored_api_key );
+			_e( 'Transcoding enabled successfully.', RTMEDIA_TRANSCODING_TEXT_DOMAIN );
+		} else {
+			$this->nonce_verification_fail_message();
+		}
 		die();
 	}
 
 	public function free_encoding_subscribe() {
-		if( wp_verify_nonce( $_REQUEST['nonce'], 'rtm_transcoding_settings_nonce' ) ){
+		if ( wp_verify_nonce( $_REQUEST[ 'nonce' ], 'rtm_transcoding_settings_nonce' ) ) {
 			$email = get_site_option( 'admin_email' );
 			$usage_details = get_site_option( 'rtmedia-encoding-usage' );
-			if ( isset( $usage_details[ $this->api_key ]->plan->name ) && (strtolower( $usage_details[ $this->api_key ]->plan->name ) == 'free') ) {
+			if ( isset( $usage_details[ $this->api_key ]->plan->name ) && ( strtolower( $usage_details[ $this->api_key ]->plan->name ) == 'free' ) ) {
 				echo json_encode( array( 'error' => 'Your free subscription is already activated.' ) );
 			} else {
 				$free_subscription_url = esc_url_raw( add_query_arg( array( 'email' => urlencode( $email ) ), trailingslashit( $this->api_url ) . 'api/free/' ) );
@@ -325,7 +349,7 @@ class RTMedia_Transcoding_Admin_Settings {
 					$free_subscription_url = esc_url_raw( add_query_arg( array( 'email' => urlencode( $email ), 'apikey' => $this->api_key ), $free_subscription_url ) );
 				}
 				$free_subscribe_page = wp_remote_get( $free_subscription_url, array( 'timeout' => 120 ) );
-				if ( ! is_wp_error( $free_subscribe_page ) && ( ! isset( $free_subscribe_page[ 'headers' ][ 'status' ] ) || (isset( $free_subscribe_page[ 'headers' ][ 'status' ] ) && ($free_subscribe_page[ 'headers' ][ 'status' ] == 200))) ) {
+				if ( ! is_wp_error( $free_subscribe_page ) && ( ! isset( $free_subscribe_page[ 'headers' ][ 'status' ] ) || ( isset( $free_subscribe_page[ 'headers' ][ 'status' ] ) && ( $free_subscribe_page[ 'headers' ][ 'status' ] == 200 ) ) ) ) {
 					$subscription_info = json_decode( $free_subscribe_page[ 'body' ] );
 					if ( isset( $subscription_info->status ) && $subscription_info->status ) {
 						echo json_encode( array( 'apikey' => $subscription_info->apikey ) );
@@ -342,8 +366,22 @@ class RTMedia_Transcoding_Admin_Settings {
 		die();
 	}
 
-	public function nonce_verification_fail_message(){
+	public function nonce_verification_fail_message() {
 		return __( 'Cheating huh !', RTMEDIA_TRANSCODING_TEXT_DOMAIN );
+	}
+
+	public function unsubscribe_service() {
+		$unsubscribe_url = trailingslashit( $this->api_url ) . 'api/cancel/' . $this->api_key;
+		$unsubscribe_page = wp_remote_post( $unsubscribe_url, array( 'timeout' => 120, 'body' => array( 'note' => $_GET[ 'note' ] ) ) );
+		if ( ! is_wp_error( $unsubscribe_page ) && ( ! isset( $unsubscribe_page[ 'headers' ][ 'status' ] ) || ( isset( $unsubscribe_page[ 'headers' ][ 'status' ] ) && ( $unsubscribe_page[ 'headers' ][ 'status' ] == 200 ) ) ) ) {
+			$subscription_info = json_decode( $unsubscribe_page[ 'body' ] );
+			if ( isset( $subscription_info->status ) && $subscription_info->status ) {
+				echo json_encode( array( 'updated' => __( 'Your subscription was cancelled successfully', RTMEDIA_TRANSCODING_TEXT_DOMAIN ), 'form' => $this->encoding_subscription_form( $_GET[ 'plan' ], $_GET[ 'price' ] ) ) );
+			}
+		} else {
+			echo json_encode( array( 'error' => __( 'Something went wrong please try again.', RTMEDIA_TRANSCODING_TEXT_DOMAIN ) ) );
+		}
+		die();
 	}
 
 }

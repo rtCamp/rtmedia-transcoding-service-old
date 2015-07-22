@@ -108,6 +108,7 @@ class RTMedia_Transcoding {
 		$this->loader->add_action( 'wp_ajax_rtmedia_free_encoding_subscribe', $plugin_admin->settings_page, 'free_encoding_subscribe' );
 		$this->loader->add_action( 'wp_ajax_rtm_disable_transcoding', $plugin_admin->settings_page, 'disable_encoding' );
 		$this->loader->add_action( 'wp_ajax_rtm_enable_transcoding', $plugin_admin->settings_page, 'enable_encoding' );
+		$this->loader->add_action( 'wp_ajax_rtm_unsubscribe_transcoding', $plugin_admin->settings_page, 'unsubscribe_service' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 	}

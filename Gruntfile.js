@@ -10,7 +10,7 @@ module.exports = function ( grunt ) {
 		watch: {
 			sass: {
 				files: [ 'admin/css/sass/**/*.{scss,sass}' ],
-				tasks: [ 'sass', 'autoprefixer' ]
+				tasks: [ 'sass' ]
 			}
 		},
 		// sass
@@ -32,19 +32,6 @@ module.exports = function ( grunt ) {
 				}
 			}
 		},
-		// autoprefixer
-		autoprefixer: {
-			options: {
-				browsers: [ 'last 2 versions', 'ie 9', 'ios 6', 'android 4' ],
-				map: true
-			},
-			files: {
-				expand: true,
-				flatten: true,
-				src: 'admin/css/*.css',
-				dest: 'admin/css/'
-			}
-		},
 		// Uglify Ref. https://npmjs.org/package/grunt-contrib-uglify
 		uglify: {
 			options: {
@@ -59,5 +46,5 @@ module.exports = function ( grunt ) {
 		}
 	} );
 	// register task
-	grunt.registerTask( 'default', [ 'sass', 'autoprefixer', 'uglify', 'watch' ] );
+	grunt.registerTask( 'default', [ 'sass', 'uglify', 'watch' ] );
 };
