@@ -209,8 +209,7 @@ class RTMedia_Transcoding_Admin_Settings {
 		$return_page = esc_url( add_query_arg( array( 'page' => 'rtmedia-addons' ), ( is_multisite() ? network_admin_url( 'admin.php' ) : admin_url( 'admin.php' ) ) ) );
 
 		$usage_details = get_site_option( 'rtmedia-encoding-usage' );
-//		if ( isset( $usage_details[ $this->api_key ]->plan->name ) && ( strtolower( $usage_details[ $this->api_key ]->plan->name ) == strtolower( $name ) ) && $usage_details[ $this->api_key ]->sub_status && ! $force ) {
-		if ( true ) {
+		if ( isset( $usage_details[ $this->api_key ]->plan->name ) && ( strtolower( $usage_details[ $this->api_key ]->plan->name ) == strtolower( $name ) ) && $usage_details[ $this->api_key ]->sub_status && ! $force ) {
 			$form = '<button data-plan="' . $name . '" data-price="' . $price . '" type="submit" class="button rtm-transcoding-unsubscribe">' . __( 'Unsubscribe', RTMEDIA_TRANSCODING_TEXT_DOMAIN ) . '</button>';
 			$form .= '<div class="rtm-transcoding-unsubscribe-spinner spinner"></div>';
 			$form .= '<div id="rtm-transcoding-unsubscribe-dialog" title="Unsubscribe">

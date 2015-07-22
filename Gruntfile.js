@@ -17,7 +17,8 @@ module.exports = function ( grunt ) {
 		sass: {
 			dist: {
 				options: {
-					style: 'expanded'
+					style: 'expanded',
+					sourcemap: 'none'
 				},
 				files: {
 					'admin/css/rtmedia-transcoding-admin.css': 'admin/css/sass/rtmedia-transcoding-admin.scss'
@@ -25,7 +26,8 @@ module.exports = function ( grunt ) {
 			},
 			minify: {
 				options: {
-					style: 'compressed'
+					style: 'compressed',
+					sourcemap: 'none'
 				},
 				files: {
 					'admin/css/rtmedia-transcoding-admin.min.css': 'admin/css/sass/rtmedia-transcoding-admin.scss'
