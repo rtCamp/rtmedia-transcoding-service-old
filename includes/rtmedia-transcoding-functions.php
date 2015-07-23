@@ -92,3 +92,14 @@ function rtmedia_transcoding_get_video_thumb_meta_key(){
 function rtmedia_transcoding_get_video_thumbs( $post_id ){
 	return maybe_unserialize( get_post_meta( $post_id, rtmedia_transcoding_get_video_thumb_meta_key(), true ) );
 }
+
+/*
+ * Check whether transcoding service available or not
+ *
+ * @since   1.0
+ *
+ * @return  boolean
+ */
+function rtmedia_transcoding_can_process(){
+	return empty( rtmedia_transcoding_get_api_key() ) ? false : true ;
+}

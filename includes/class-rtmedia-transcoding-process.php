@@ -42,10 +42,11 @@ class RTMedia_Transcoding_Process {
 	 */
 	public function do_transcoding( $data, $post_id ) {
 
-		// get api key
-		$api_key = rtmedia_transcoding_get_api_key();
-		if ( $api_key ) {
+		// check if transcoding is possible or not
+		if ( rtmedia_transcoding_can_process() ) {
 
+			// get api key
+			$api_key = rtmedia_transcoding_get_api_key();
 			// check for usage quota
 			if ( $this->is_under_usage_quota( $api_key ) ) {
 
