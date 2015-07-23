@@ -101,5 +101,39 @@ function rtmedia_transcoding_get_video_thumbs( $post_id ){
  * @return  boolean
  */
 function rtmedia_transcoding_can_process(){
-	return empty( rtmedia_transcoding_get_api_key() ) ? false : true ;
+	$can_process = false;
+
+	if( ! empty( rtmedia_transcoding_get_api_key() ) ){
+		$can_process = true;
+	}
+
+	if( rtmedia_transcoding_get_remain_usage() > 0 ){
+		$can_process = true;
+	}
+
+	return $can_process;
+}
+
+/*
+ * Get current usage info
+ *
+ * since    1.0
+ *
+ * @param   mixed   $api_key
+ *
+ * @return  integer
+ */
+function rtmedia_transcoding_get_remain_usage( $api_key = false ){
+	$remain = 0;
+	$usage_info = rtmedia_transcoding_get_option( 'rtmedia-encoding-usage', array() );
+
+	if ( ! $api_key ) {
+		$api_key = rtmedia_transcoding_get_api_key();
+	}
+
+	if ( $api_key && isset( $usage_info[ $api_key ] ) && isset( $usage_info[ $api_key ]->remaining ) ) {
+		$remain = $usage_info[ $api_key ]->remaining;
+	}
+
+	return intval( $remain );
 }

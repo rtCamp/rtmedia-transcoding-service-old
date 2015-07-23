@@ -47,53 +47,50 @@ class RTMedia_Transcoding_Process {
 
 			// get api key
 			$api_key = rtmedia_transcoding_get_api_key();
-			// check for usage quota
-			if ( $this->is_under_usage_quota( $api_key ) ) {
 
-				// get file and mime type
-				$attchment_url = wp_get_attachment_url( $post_id );
-				$mime_type = get_post_mime_type( $post_id );
+			// get file and mime type
+			$attchment_url = wp_get_attachment_url( $post_id );
+			$mime_type = get_post_mime_type( $post_id );
 
-				$file_exploded = explode( '.', $attchment_url );
-				$file_type = $file_exploded[ sizeof( $file_exploded ) - 1 ];
+			$file_exploded = explode( '.', $attchment_url );
+			$file_type = $file_exploded[ sizeof( $file_exploded ) - 1 ];
 
-				$black_list_types = array( 'mp3', );
-				$black_list_mime_types = array( 'audio/mp3', );
+			$black_list_types = array( 'mp3', );
+			$black_list_mime_types = array( 'audio/mp3', );
 
-				preg_match( '/video|audio/i', $mime_type, $type_array );
+			preg_match( '/video|audio/i', $mime_type, $type_array );
 
-				// check whether current file is valid or not to do transcoding
-				if ( ! empty( $type_array ) && ! in_array( $file_type, $black_list_types ) && ! in_array( $mime_type, $black_list_mime_types ) ) {
-					$format = ( $type_array[ 0 ] == 'video' ) ? 'mp4' : 'mp3';
-					$total_thumbs = 3;  // todo provide admin option for this
+			// check whether current file is valid or not to do transcoding
+			if ( ! empty( $type_array ) && ! in_array( $file_type, $black_list_types ) && ! in_array( $mime_type, $black_list_mime_types ) ) {
+				$format = ( $type_array[ 0 ] == 'video' ) ? 'mp4' : 'mp3';
+				$total_thumbs = 3;  // todo provide admin option for this
 
-					// build parameters to send
-					$query_args = array(
-						'url' =>            urlencode( $attchment_url ),       // Public URL of media file
-						'callbackurl' =>    urlencode( trailingslashit( home_url() ) . "index.php" ),  // callback URL to send transcoded file
-						'force' =>          0,
-						'formats' =>        $format,  // format in which file need to convert
-						'thumbs' =>         $total_thumbs,   // number of thumbs to generate for videos
-						'rt_id' =>          $post_id   // WordPress post id of attachment
-					);
-					$transoding_url = $this->api_url . 'job/new/';
-					$upload_url = add_query_arg( $query_args, $transoding_url . $api_key );
+				// build parameters to send
+				$query_args = array(
+					'url' =>            urlencode( $attchment_url ),       // Public URL of media file
+					'callbackurl' =>    urlencode( trailingslashit( home_url() ) . "index.php" ),  // callback URL to send transcoded file
+					'force' =>          0,
+					'formats' =>        $format,  // format in which file need to convert
+					'thumbs' =>         $total_thumbs,   // number of thumbs to generate for videos
+					'rt_id' =>          $post_id   // WordPress post id of attachment
+				);
+				$transoding_url = $this->api_url . 'job/new/';
+				$upload_url = add_query_arg( $query_args, $transoding_url . $api_key );
 
-					// send file to server
-					$upload_res = wp_remote_get( $upload_url );
+				// send file to server
+				$upload_res = wp_remote_get( $upload_url );
 
-					// save response in post meta
-					if ( ! is_wp_error( $upload_res ) && (int) wp_remote_retrieve_response_code( $upload_res ) == 200 ) {
-						$upload_info = wp_remote_retrieve_body( $upload_res );
-						if ( isset( $upload_info->status ) && $upload_info->status && isset( $upload_info->job_id ) && $upload_info->job_id ) {
-							$job_id = $upload_info->job_id;
-							update_post_meta( $post_id, 'rtmedia-encoding-job-id', $job_id );
-						}
+				// save response in post meta
+				if ( ! is_wp_error( $upload_res ) && (int) wp_remote_retrieve_response_code( $upload_res ) == 200 ) {
+					$upload_info = wp_remote_retrieve_body( $upload_res );
+					if ( isset( $upload_info->status ) && $upload_info->status && isset( $upload_info->job_id ) && $upload_info->job_id ) {
+						$job_id = $upload_info->job_id;
+						update_post_meta( $post_id, 'rtmedia-encoding-job-id', $job_id );
 					}
-
-					// update usage quota
-					$this->update_usage_quota( $api_key );
 				}
+
+				// update usage quota
+				$this->update_usage_quota( $api_key );
 			}
 		}
 
@@ -181,30 +178,6 @@ class RTMedia_Transcoding_Process {
 			// update usage quota
 			$this->update_usage_quota();
 		}
-	}
-
-	/*
-	 * Check current usage quota
-	 *
-	 * @since   1.0
-	 * @return  boolean
-	 */
-	public function is_under_usage_quota( $api_key = false ) {
-
-		$under_quota = false;
-		$usage_info = rtmedia_transcoding_get_option( 'rtmedia-encoding-usage' );
-
-		if ( ! $api_key ) {
-			$api_key = rtmedia_transcoding_get_api_key();
-		}
-
-		if ( isset( $usage_info[ $api_key ]->status ) && $usage_info[ $api_key ]->status ) {
-			if ( isset( $usage_info[ $api_key ]->remaining ) && $usage_info[ $api_key ]->remaining > 0 ) {
-				$under_quota = true;
-			}
-		}
-
-		return $under_quota;
 	}
 
 	/*
