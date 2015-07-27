@@ -1,11 +1,11 @@
-jQuery( document ).ready( function(){
+jQuery( document ).ready( function () {
 	jQuery( document ).on( 'click', '.rtm-transcoding-try-now', function ( e ) {
 		e.preventDefault();
 		jQuery( '.rtm-transcoding-new-key-spinner' ).addClass( 'is-active' );
 		// todo confirmation message
 		var data = {
 			action: 'rtmedia_free_encoding_subscribe',
-			nonce: jQuery('#rtm_transcoding_settings_nonce' ).val()
+			nonce: jQuery( '#rtm_transcoding_settings_nonce' ).val()
 		};
 
 		// since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
@@ -29,7 +29,7 @@ jQuery( document ).ready( function(){
 		jQuery( '.rtm-enable-disable-spinner-transcoding' ).addClass( 'is-active' );
 		var data = {
 			action: 'rtm_disable_transcoding',
-			nonce: jQuery('#rtm_transcoding_settings_nonce' ).val()
+			nonce: jQuery( '#rtm_transcoding_settings_nonce' ).val()
 		};
 
 		// since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
@@ -59,7 +59,7 @@ jQuery( document ).ready( function(){
 		jQuery( '.rtm-enable-disable-spinner-transcoding' ).addClass( 'is-active' );
 		var data = {
 			action: 'rtm_enable_transcoding',
-			nonce: jQuery('#rtm_transcoding_settings_nonce' ).val()
+			nonce: jQuery( '#rtm_transcoding_settings_nonce' ).val()
 		};
 		jQuery.post( ajaxurl, data, function ( response ) {
 			jQuery( '.rtm-enable-disable-spinner-transcoding' ).removeClass( 'is-active' );
@@ -88,7 +88,8 @@ jQuery( document ).ready( function(){
 				action: 'rtm_unsubscribe_transcoding',
 				note: jQuery( '#rtm-transcoding-unsubscribe-note' ).val(),
 				plan: jQuery( '.rtm-transcoding-unsubscribe' ).attr( 'data-plan' ),
-				price: jQuery( '.rtm-transcoding-unsubscribe' ).attr( 'data-price' )
+				price: jQuery( '.rtm-transcoding-unsubscribe' ).attr( 'data-price' ),
+				nonce: jQuery( '#rtm_transcoding_settings_nonce' ).val()
 			};
 
 			// since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php

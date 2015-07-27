@@ -10,9 +10,6 @@
  * @author      Ritesh Patel <ritesh.patel@rtcamp.com>
  */
 
-/*
- *
- */
 
 class RTMedia_Transcoding_Admin_Settings {
 
@@ -178,17 +175,19 @@ class RTMedia_Transcoding_Admin_Settings {
 					</tr>
 					<tr>
 						<th>&nbsp;</th>
-						<td><?php
-							$usage_details = get_site_option( 'rtmedia-encoding-usage' );
-							if ( isset( $usage_details[ $this->api_key ]->plan->name ) && ( strtolower( $usage_details[ $this->api_key ]->plan->name ) == 'free' ) ) {
-								echo '<button disabled="disabled" type="submit" class="rtm-transcoding-try-now button button-primary">' . __( 'Current Plan', RTMEDIA_TRANSCODING_TEXT_DOMAIN ) . '</button>';
-							} else {
-								?>
-								<form id="rtm-transcoding-try-now-form" method="get">
-								<button type="submit"
-								        class="rtm-transcoding-try-now button button-primary"><?php _e( 'Try Now', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></button>
-								</form><?php }
+						<td>
+						<?php
+						$usage_details = get_site_option( 'rtmedia-encoding-usage' );
+						if ( isset( $usage_details[ $this->api_key ]->plan->name ) && ( strtolower( $usage_details[ $this->api_key ]->plan->name ) == 'free' ) ) {
+							echo '<button disabled="disabled" type="submit" class="rtm-transcoding-try-now button button-primary">' . __( 'Current Plan', RTMEDIA_TRANSCODING_TEXT_DOMAIN ) . '</button>';
+						} else {
 							?>
+							<form id="rtm-transcoding-try-now-form" method="get">
+							<button type="submit"
+							        class="rtm-transcoding-try-now button button-primary"><?php _e( 'Try Now', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></button>
+							</form><?php
+						}
+						?>
 						</td>
 						<td><?php echo $this->encoding_subscription_form( 'silver', 9.0 ) ?></td>
 						<td><?php echo $this->encoding_subscription_form( 'gold', 99.0 ) ?></td>
@@ -198,7 +197,7 @@ class RTMedia_Transcoding_Admin_Settings {
 				</table>
 			</div>
 		</div>
-		<?php
+	<?php
 	}
 
 	public function encoding_subscription_form( $name = 'No Name', $price = '0', $force = false ) {
@@ -261,48 +260,72 @@ class RTMedia_Transcoding_Admin_Settings {
 		$usage_url = trailingslashit( $this->api_url ) . 'api/usage/' . $key;
 		$usage_page = wp_remote_get( $usage_url, array( 'timeout' => 20 ) );
 		if ( ! is_wp_error( $usage_page ) ) {
-			$usage_info = json_decode( $usage_page[ 'body' ] );
+			$usage_info = json_decode( $usage_page['body'] );
 		} else {
-			$usage_info = NULL;
+			$usage_info = null;
 		}
 		update_site_option( 'rtmedia-encoding-usage', array( $key => $usage_info ) );
 		return $usage_info;
 	}
 
 	public function save_api_key() {
-		if ( isset( $_GET[ 'api_key_updated' ] ) && $_GET[ 'api_key_updated' ] ) {
-			if ( is_multisite() ) {
-				add_action( 'network_admin_notices', array( $this, 'successfully_subscribed_notice' ) );
+		if( current_user_can( 'manage_options' ) ){
+			if ( isset( $_GET['api_key_updated'] ) && $_GET['api_key_updated'] ) {
+				if ( is_multisite() ) {
+					add_action( 'network_admin_notices', array( $this, 'successfully_subscribed_notice' ) );
+				}
+
+				add_action( 'admin_notices', array( $this, 'successfully_subscribed_notice' ) );
 			}
 
-			add_action( 'admin_notices', array( $this, 'successfully_subscribed_notice' ) );
+			if( isset( $_GET['apikey'] ) ){
+				$apikey = $this->validate_key( $_GET['apikey'] );
+
+				if( $apikey && isset( $_GET['page'] ) && ( 'rtmedia-transcoding-settings' === $_GET['page'] ) ){
+					if ( $this->api_key && ! ( isset( $_GET['update'] ) && $_GET['update'] ) ) {
+						$unsubscribe_url = trailingslashit( $this->api_url ) . 'api/cancel/' . $this->api_key;
+						wp_remote_post( $unsubscribe_url, array( 'timeout' => 120, 'body' => array( 'note' => 'Direct URL Input (API Key: ' . $apikey . ')' ) ) );
+					}
+
+					rtmedia_transcoding_update_api_key( $apikey );
+
+					$usage_info = $this->update_usage( $apikey );
+					$return_page = esc_url( add_query_arg( array( 'page' => 'rtmedia-addons', 'api_key_updated' => $usage_info->plan->name ), admin_url( 'admin.php' ) ) );
+
+					wp_safe_redirect( esc_url_raw( $return_page ) );
+
+					die();
+				}
+			}
 		}
+	}
 
-		if ( isset( $_GET[ 'apikey' ] ) && is_admin() && isset( $_GET[ 'page' ] ) && ( $_GET[ 'page' ] == 'rtmedia-transcoding-settings' ) && $this->is_valid_key( $_GET[ 'apikey' ] ) ) {
-			if ( $this->api_key && ! ( isset( $_GET[ 'update' ] ) && $_GET[ 'update' ] ) ) {
-				$unsubscribe_url = trailingslashit( $this->api_url ) . 'api/cancel/' . $this->api_key;
-				wp_remote_post( $unsubscribe_url, array( 'timeout' => 120, 'body' => array( 'note' => 'Direct URL Input (API Key: ' . $_GET[ 'apikey' ] . ')' ) ) );
-			}
+	/**
+	 * Check and validate api key
+	 *
+	 * @param $key
+	 * @return bool|string
+	 */
+	public function validate_key( $key ){
+		$key = sanitize_text_field( $key );
 
-			rtmedia_transcoding_update_api_key( $_GET[ 'apikey' ] );
-
-			$usage_info = $this->update_usage( $_GET[ 'apikey' ] );
-			$return_page = esc_url( add_query_arg( array( 'page' => 'rtmedia-addons', 'api_key_updated' => $usage_info->plan->name ), admin_url( 'admin.php' ) ) );
-
-			wp_safe_redirect( esc_url_raw( $return_page ) );
-
-			die();
+		if( $this->is_valid_key( $key ) ){
+			return $key;
+		} else {
+			return false;
 		}
 	}
 
 	public function is_valid_key( $key ) {
 		$validate_url = trailingslashit( $this->api_url ) . 'api/validate/' . $key;
 		$validation_page = wp_remote_get( $validate_url, array( 'timeout' => 20 ) );
+		$status = false;
 		if ( ! is_wp_error( $validation_page ) ) {
-			$validation_info = json_decode( $validation_page[ 'body' ] );
+			$validation_info = json_decode( $validation_page['body'] );
 			$status = $validation_info->status;
-		} else {
-			$status = false;
+			if( 'true' === $validation_info->status ){
+				$status = true;
+			}
 		}
 		return $status;
 	}
@@ -310,13 +333,13 @@ class RTMedia_Transcoding_Admin_Settings {
 	public function successfully_subscribed_notice() {
 		?>
 		<div class="updated">
-			<p><?php printf( __( 'You have successfully subscribed for the <strong>%s</strong> plan', RTMEDIA_TRANSCODING_TEXT_DOMAIN ), $_GET[ 'api_key_updated' ] ); ?></p>
+			<p><?php printf( __( 'You have successfully subscribed for the <strong>%s</strong> plan', RTMEDIA_TRANSCODING_TEXT_DOMAIN ), sanitize_text_field( $_GET['api_key_updated'] ) ); ?></p>
 		</div>
-		<?php
+	<?php
 	}
 
 	public function disable_encoding() {
-		if ( wp_verify_nonce( $_REQUEST[ 'nonce' ], 'rtm_transcoding_settings_nonce' ) ) {
+		if ( wp_verify_nonce( $_POST['nonce'], 'rtm_transcoding_settings_nonce' ) ) {
 			rtmedia_transcoding_update_api_key( '' );
 			_e( 'Transcoding service has been disabled successfully.', RTMEDIA_TRANSCODING_TEXT_DOMAIN );
 		} else {
@@ -327,7 +350,7 @@ class RTMedia_Transcoding_Admin_Settings {
 	}
 
 	function enable_encoding() {
-		if ( wp_verify_nonce( $_REQUEST[ 'nonce' ], 'rtm_transcoding_settings_nonce' ) ) {
+		if ( wp_verify_nonce( $_POST['nonce'], 'rtm_transcoding_settings_nonce' ) ) {
 			rtmedia_transcoding_update_api_key( $this->stored_api_key );
 			_e( 'Transcoding enabled successfully.', RTMEDIA_TRANSCODING_TEXT_DOMAIN );
 		} else {
@@ -337,49 +360,69 @@ class RTMedia_Transcoding_Admin_Settings {
 	}
 
 	public function free_encoding_subscribe() {
-		if ( wp_verify_nonce( $_REQUEST[ 'nonce' ], 'rtm_transcoding_settings_nonce' ) ) {
+		if ( wp_verify_nonce( $_POST['nonce'], 'rtm_transcoding_settings_nonce' ) ) {
 			$email = get_site_option( 'admin_email' );
 			$usage_details = get_site_option( 'rtmedia-encoding-usage' );
 			if ( isset( $usage_details[ $this->api_key ]->plan->name ) && ( strtolower( $usage_details[ $this->api_key ]->plan->name ) == 'free' ) ) {
-				echo json_encode( array( 'error' => 'Your free subscription is already activated.' ) );
+				echo wp_json_encode( array( 'error' => 'Your free subscription is already activated.' ) );
 			} else {
 				$free_subscription_url = esc_url_raw( add_query_arg( array( 'email' => urlencode( $email ) ), trailingslashit( $this->api_url ) . 'api/free/' ) );
 				if ( $this->api_key ) {
 					$free_subscription_url = esc_url_raw( add_query_arg( array( 'email' => urlencode( $email ), 'apikey' => $this->api_key ), $free_subscription_url ) );
 				}
 				$free_subscribe_page = wp_remote_get( $free_subscription_url, array( 'timeout' => 120 ) );
-				if ( ! is_wp_error( $free_subscribe_page ) && ( ! isset( $free_subscribe_page[ 'headers' ][ 'status' ] ) || ( isset( $free_subscribe_page[ 'headers' ][ 'status' ] ) && ( $free_subscribe_page[ 'headers' ][ 'status' ] == 200 ) ) ) ) {
-					$subscription_info = json_decode( $free_subscribe_page[ 'body' ] );
+				if ( ! is_wp_error( $free_subscribe_page ) && ( ! isset( $free_subscribe_page['headers']['status'] ) || ( isset( $free_subscribe_page['headers']['status'] ) && ( 200 === $free_subscribe_page['headers']['status'] ) ) ) ) {
+					$subscription_info = json_decode( $free_subscribe_page['body'] );
 					if ( isset( $subscription_info->status ) && $subscription_info->status ) {
-						echo json_encode( array( 'apikey' => $subscription_info->apikey ) );
+						echo wp_json_encode( array( 'apikey' => $subscription_info->apikey ) );
 					} else {
-						echo json_encode( array( 'error' => $subscription_info->message ) );
+						echo wp_json_encode( array( 'error' => $subscription_info->message ) );
 					}
 				} else {
-					echo json_encode( array( 'error' => __( 'Something went wrong please try again.' ) ) );
+					echo wp_json_encode( array( 'error' => __( 'Something went wrong please try again.' ) ) );
 				}
 			}
 		} else {
-			echo json_encode( array( 'error' => $this->nonce_verification_fail_message() ) );
+			echo wp_json_encode( array( 'error' => $this->nonce_verification_fail_message() ) );
 		}
 		die();
 	}
 
+	/**
+	 * Nonce verification fail message
+	 *
+	 * @since   1.0
+	 */
 	public function nonce_verification_fail_message() {
 		return __( 'Cheating huh !', RTMEDIA_TRANSCODING_TEXT_DOMAIN );
 	}
 
+	/**
+	 * Unsubscribe transcoding service
+	 *
+	 * @since   1.0
+	 */
 	public function unsubscribe_service() {
-		$unsubscribe_url = trailingslashit( $this->api_url ) . 'api/cancel/' . $this->api_key;
-		$unsubscribe_page = wp_remote_post( $unsubscribe_url, array( 'timeout' => 120, 'body' => array( 'note' => $_GET[ 'note' ] ) ) );
-		if ( ! is_wp_error( $unsubscribe_page ) && ( ! isset( $unsubscribe_page[ 'headers' ][ 'status' ] ) || ( isset( $unsubscribe_page[ 'headers' ][ 'status' ] ) && ( $unsubscribe_page[ 'headers' ][ 'status' ] == 200 ) ) ) ) {
-			$subscription_info = json_decode( $unsubscribe_page[ 'body' ] );
-			if ( isset( $subscription_info->status ) && $subscription_info->status ) {
-				echo json_encode( array( 'updated' => __( 'Your subscription was cancelled successfully', RTMEDIA_TRANSCODING_TEXT_DOMAIN ), 'form' => $this->encoding_subscription_form( $_GET[ 'plan' ], $_GET[ 'price' ] ) ) );
+		$res_array = array( array( 'error' => __( 'Something went wrong please try again.', RTMEDIA_TRANSCODING_TEXT_DOMAIN ) ) );
+		if ( wp_verify_nonce( $_GET['nonce'], 'rtm_transcoding_settings_nonce' ) && current_user_can( 'manage_options' ) ) {
+			$note = sanitize_text_field( sanitize_text_field( $_GET['note'] ) );
+			$unsubscribe_url = trailingslashit( $this->api_url ) . 'api/cancel/' . $this->api_key;
+			$unsubscribe_page = wp_remote_post( $unsubscribe_url, array( 'timeout' => 120, 'body' => array( 'note' => $note ) ) );
+			if ( ! is_wp_error( $unsubscribe_page ) && ( ! isset( $unsubscribe_page['headers']['status'] ) || ( isset( $unsubscribe_page['headers']['status'] ) && ( 200 === $unsubscribe_page['headers']['status'] ) ) ) ) {
+				$subscription_info = wp_json_encode( $unsubscribe_page['body'] );
+				$plan = sanitize_text_field( $_GET['plan'] );
+				$price = intval( $_GET['price'] );
+				if ( isset( $subscription_info->status ) && $subscription_info->status ) {
+					$res_array =  array(
+						'updated' => __( 'Your subscription was cancelled successfully', RTMEDIA_TRANSCODING_TEXT_DOMAIN ),
+						'form' => $this->encoding_subscription_form( $plan, $price ),
+					);
+				}
 			}
 		} else {
-			echo json_encode( array( 'error' => __( 'Something went wrong please try again.', RTMEDIA_TRANSCODING_TEXT_DOMAIN ) ) );
+
 		}
+		echo wp_json_encode( $res_array );
 		die();
 	}
 

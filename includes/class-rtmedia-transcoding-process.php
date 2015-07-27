@@ -103,13 +103,14 @@ class RTMedia_Transcoding_Process {
 	 * @since   1.0
 	 */
 	public function handle_callback() {
-		// Check if request is from transcoding server or not
+		// Check if request is from transcoding server or not.
+		// We can't use nonce here as this request will be from transcoding service.
 
 		//todo check for valid response, may be use job_id or API key here and check for host
 		if ( isset( $_REQUEST[ 'job_id' ] ) && isset( $_REQUEST[ 'rt_id' ] ) && isset( $_REQUEST[ 'download_url' ] ) ) {
 
 			require_once( ABSPATH . 'wp-admin/includes/image.php' );
-			$post_id = $_REQUEST[ 'rt_id' ];
+			$post_id = intval( $_REQUEST[ 'rt_id' ] );
 
 			//todo check for valid url
 			//todo why use "urldecode" 2 times? Need to look into transcoding server response
