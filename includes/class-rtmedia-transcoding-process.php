@@ -55,24 +55,24 @@ class RTMedia_Transcoding_Process {
 			$file_exploded = explode( '.', $attchment_url );
 			$file_type = $file_exploded[ sizeof( $file_exploded ) - 1 ];
 
-			$black_list_types = array( 'mp3', );
-			$black_list_mime_types = array( 'audio/mp3', );
+			$black_list_types = array( 'mp3' );
+			$black_list_mime_types = array( 'audio/mp3' );
 
 			preg_match( '/video|audio/i', $mime_type, $type_array );
 
 			// check whether current file is valid or not to do transcoding
 			if ( ! empty( $type_array ) && ! in_array( $file_type, $black_list_types ) && ! in_array( $mime_type, $black_list_mime_types ) ) {
-				$format = ( $type_array[ 0 ] == 'video' ) ? 'mp4' : 'mp3';
+				$format = ( $type_array[0] == 'video' ) ? 'mp4' : 'mp3';
 				$total_thumbs = 3;  // todo provide admin option for this
 
 				// build parameters to send
 				$query_args = array(
-					'url' =>            urlencode( $attchment_url ),       // Public URL of media file
-					'callbackurl' =>    urlencode( trailingslashit( home_url() ) . "index.php" ),  // callback URL to send transcoded file
-					'force' =>          0,
-					'formats' =>        $format,  // format in which file need to convert
-					'thumbs' =>         $total_thumbs,   // number of thumbs to generate for videos
-					'rt_id' =>          $post_id   // WordPress post id of attachment
+					'url' => urlencode( $attchment_url ),       // Public URL of media file
+					'callbackurl' => urlencode( trailingslashit( home_url() ) . 'index.php' ),  // callback URL to send transcoded file
+					'force' => 0,
+					'formats' => $format,  // format in which file need to convert
+					'thumbs' => $total_thumbs,   // number of thumbs to generate for videos
+					'rt_id' => $post_id,// WordPress post id of attachment
 				);
 				$transoding_url = $this->api_url . 'job/new/';
 				$upload_url = add_query_arg( $query_args, $transoding_url . $api_key );
@@ -107,16 +107,16 @@ class RTMedia_Transcoding_Process {
 		// We can't use nonce here as this request will be from transcoding service.
 
 		//todo check for valid response, may be use job_id or API key here and check for host
-		if ( isset( $_REQUEST[ 'job_id' ] ) && isset( $_REQUEST[ 'rt_id' ] ) && isset( $_REQUEST[ 'download_url' ] ) ) {
+		if ( isset( $_REQUEST['job_id'] ) && isset( $_REQUEST['rt_id'] ) && isset( $_REQUEST['download_url'] ) ) {
 
 			require_once( ABSPATH . 'wp-admin/includes/image.php' );
-			$post_id = intval( $_REQUEST[ 'rt_id' ] );
+			$post_id = intval( $_REQUEST['rt_id'] );
 
 			//todo check for valid url
 			//todo why use "urldecode" 2 times? Need to look into transcoding server response
-			$download_url = urldecode( urldecode( $_REQUEST[ 'download_url' ] ) );
-			$thumbs = ( isset( $_REQUEST[ 'thumbs' ] ) ) ? $_REQUEST[ 'thumbs' ] : array();
-			$request_type = isset( $_REQUEST[ 'format' ] ) ? $_REQUEST[ 'format' ] : false;
+			$download_url = urldecode( urldecode( $_REQUEST['download_url'] ) );
+			$thumbs = ( isset( $_REQUEST['thumbs'] ) ) ? $_REQUEST['thumbs'] : array();
+			$request_type = isset( $_REQUEST['format'] ) ? $_REQUEST['format'] : false;
 			$file_bits = false;
 
 			// remove all filters for attachment url and attachment file
@@ -142,7 +142,7 @@ class RTMedia_Transcoding_Process {
 			// download transcoded file
 			try {
 				$file_bits = file_get_contents( $download_url );
-			} catch( Exception $e ) {
+			} catch ( Exception $e ) {
 				$flag = $e->getMessage();
 			}
 
@@ -153,20 +153,20 @@ class RTMedia_Transcoding_Process {
 				add_filter( 'upload_dir', array( $this, 'modify_upload_dir' ) );
 
 				// upload the file
-				$upload_info = wp_upload_bits( $file_path_info[ 'basename' ], null, $file_bits );
+				$upload_info = wp_upload_bits( $file_path_info['basename'], null, $file_bits );
 
 				// update post
 				$post_update_array = array(
 					'ID' => $post_id,
-					'guid' => $upload_info[ 'url' ],
-					'post_mime_type' => $file_type[ 'type' ],
+					'guid' => $upload_info['url'],
+					'post_mime_type' => $file_type['type'],
 				);
 				wp_update_post( $post_update_array );
 
 				// save video thumbs and update post meta
 				$old_wp_attached_file = get_post_meta( $post_id, '_wp_attached_file', true );
 				$old_wp_attached_file_pathinfo = pathinfo( $old_wp_attached_file );
-				update_post_meta( $post_id, '_wp_attached_file', str_replace( $old_wp_attached_file_pathinfo[ 'basename' ], $file_path_info[ 'basename' ], $old_wp_attached_file ) );
+				update_post_meta( $post_id, '_wp_attached_file', str_replace( $old_wp_attached_file_pathinfo['basename'], $file_path_info['basename'], $old_wp_attached_file ) );
 
 				// remove upload_dir filter added previously
 				remove_filter( 'upload_dir', array( $this, 'modify_upload_dir' ) );
@@ -198,7 +198,7 @@ class RTMedia_Transcoding_Process {
 		if ( ! is_wp_error( $usage_res ) && ( (int) wp_remote_retrieve_response_code( $usage_res ) == 200 ) ) {
 			$usage_info = json_decode( wp_remote_retrieve_body( $usage_res ) );
 		} else {
-			$usage_info = NULL;
+			$usage_info = null;
 		}
 
 		update_site_option( 'rtmedia-encoding-usage', array( $api_key => $usage_info ) );
@@ -234,8 +234,8 @@ class RTMedia_Transcoding_Process {
 		 * replace path and url with the new value
 		 * Basically, remove file name from path and URL
 		 */
-		$up_dir[ 'path' ] = str_replace( basename( $this->post_obj->attached_file ), '', $this->post_obj->attached_file );
-		$up_dir[ 'url' ] = str_replace( basename( $this->post_obj->file_url ), '', $this->post_obj->file_url );
+		$up_dir['path'] = str_replace( basename( $this->post_obj->attached_file ), '', $this->post_obj->attached_file );
+		$up_dir['url'] = str_replace( basename( $this->post_obj->file_url ), '', $this->post_obj->file_url );
 
 		return $up_dir;
 	}
@@ -254,7 +254,7 @@ class RTMedia_Transcoding_Process {
 			$post_thumbs = array();
 
 			// loop through each thumb and save them
-			foreach( $thumbs as $single_thumb ) {
+			foreach ( $thumbs as $single_thumb ) {
 
 				// get thumb from remote
 				$remote_thumb = wp_remote_get( $single_thumb );
@@ -262,12 +262,12 @@ class RTMedia_Transcoding_Process {
 
 				// generate thumb file name
 				$thumb_info = pathinfo( $single_thumb );
-				$thumb_file_name = basename( urldecode( $thumb_info[ 'basename' ] ) );
+				$thumb_file_name = basename( urldecode( $thumb_info['basename'] ) );
 
 				// upload thumb file
 				$thumb_upload_info = wp_upload_bits( $thumb_file_name, null, $thumb_body );
 
-				$post_thumbs[] = $thumb_upload_info[ 'url' ];
+				$post_thumbs[] = $thumb_upload_info['url'];
 			}
 
 			// save media thumb details into post meta

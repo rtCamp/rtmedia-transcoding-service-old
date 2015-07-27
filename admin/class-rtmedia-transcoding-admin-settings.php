@@ -269,7 +269,7 @@ class RTMedia_Transcoding_Admin_Settings {
 	}
 
 	public function save_api_key() {
-		if( current_user_can( 'manage_options' ) ){
+		if ( current_user_can( 'manage_options' ) ) {
 			if ( isset( $_GET['api_key_updated'] ) && $_GET['api_key_updated'] ) {
 				if ( is_multisite() ) {
 					add_action( 'network_admin_notices', array( $this, 'successfully_subscribed_notice' ) );
@@ -278,10 +278,10 @@ class RTMedia_Transcoding_Admin_Settings {
 				add_action( 'admin_notices', array( $this, 'successfully_subscribed_notice' ) );
 			}
 
-			if( isset( $_GET['apikey'] ) ){
+			if ( isset( $_GET['apikey'] ) ) {
 				$apikey = $this->validate_key( $_GET['apikey'] );
 
-				if( $apikey && isset( $_GET['page'] ) && ( 'rtmedia-transcoding-settings' === $_GET['page'] ) ){
+				if ( $apikey && isset( $_GET['page'] ) && ( 'rtmedia-transcoding-settings' === $_GET['page'] ) ) {
 					if ( $this->api_key && ! ( isset( $_GET['update'] ) && $_GET['update'] ) ) {
 						$unsubscribe_url = trailingslashit( $this->api_url ) . 'api/cancel/' . $this->api_key;
 						wp_remote_post( $unsubscribe_url, array( 'timeout' => 120, 'body' => array( 'note' => 'Direct URL Input (API Key: ' . $apikey . ')' ) ) );
@@ -306,10 +306,10 @@ class RTMedia_Transcoding_Admin_Settings {
 	 * @param $key
 	 * @return bool|string
 	 */
-	public function validate_key( $key ){
+	public function validate_key( $key ) {
 		$key = sanitize_text_field( $key );
 
-		if( $this->is_valid_key( $key ) ){
+		if ( $this->is_valid_key( $key ) ) {
 			return $key;
 		} else {
 			return false;
@@ -323,7 +323,7 @@ class RTMedia_Transcoding_Admin_Settings {
 		if ( ! is_wp_error( $validation_page ) ) {
 			$validation_info = json_decode( $validation_page['body'] );
 			$status = $validation_info->status;
-			if( 'true' === $validation_info->status ){
+			if ( 'true' === $validation_info->status ) {
 				$status = true;
 			}
 		}
@@ -413,7 +413,7 @@ class RTMedia_Transcoding_Admin_Settings {
 				$plan = sanitize_text_field( $_GET['plan'] );
 				$price = intval( $_GET['price'] );
 				if ( isset( $subscription_info->status ) && $subscription_info->status ) {
-					$res_array =  array(
+					$res_array = array(
 						'updated' => __( 'Your subscription was cancelled successfully', RTMEDIA_TRANSCODING_TEXT_DOMAIN ),
 						'form' => $this->encoding_subscription_form( $plan, $price ),
 					);

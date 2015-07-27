@@ -119,7 +119,7 @@ class RTMedia_Transcoding {
 	 * @since   1.0
 	 * @access  private
 	 */
-	private function define_process_hooks(){
+	private function define_process_hooks() {
 		$process = new RTMedia_Transcoding_Process();
 
 		/*

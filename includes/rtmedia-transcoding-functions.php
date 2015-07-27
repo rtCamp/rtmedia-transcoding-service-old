@@ -18,7 +18,7 @@
  *
  * @return  mixed
  */
-function rtmedia_transcoding_get_option( $option_key, $default = false ){
+function rtmedia_transcoding_get_option( $option_key, $default = false ) {
 	return get_site_option( $option_key, $default );
 }
 
@@ -31,7 +31,7 @@ function rtmedia_transcoding_get_option( $option_key, $default = false ){
  *
  * @return boolean
  */
-function rtmedia_transcoding_update_option( $option_key, $option_value ){
+function rtmedia_transcoding_update_option( $option_key, $option_value ) {
 	return update_site_option( $option_key, $option_value );
 }
 
@@ -42,7 +42,7 @@ function rtmedia_transcoding_update_option( $option_key, $option_value ){
  *
  * @return  string
  */
-function rtmedia_transcoding_get_api_key_id(){
+function rtmedia_transcoding_get_api_key_id() {
 	return 'rtmedia-encoding-api-key';
 }
 
@@ -54,7 +54,7 @@ function rtmedia_transcoding_get_api_key_id(){
  *
  * @return  mixed
  */
-function rtmedia_transcoding_get_api_key( $default = false ){
+function rtmedia_transcoding_get_api_key( $default = false ) {
 	return rtmedia_transcoding_get_option( rtmedia_transcoding_get_api_key_id(), $default );
 }
 
@@ -66,7 +66,7 @@ function rtmedia_transcoding_get_api_key( $default = false ){
  *
  * @return  mixed
  */
-function rtmedia_transcoding_update_api_key( $key = '' ){
+function rtmedia_transcoding_update_api_key( $key = '' ) {
 	return rtmedia_transcoding_update_option( rtmedia_transcoding_get_api_key_id(), $key );
 }
 
@@ -77,7 +77,7 @@ function rtmedia_transcoding_update_api_key( $key = '' ){
  *
  * @return  string
  */
-function rtmedia_transcoding_get_video_thumb_meta_key(){
+function rtmedia_transcoding_get_video_thumb_meta_key() {
 	return 'rtmedia_transcoding_thumbs';
 }
 
@@ -89,7 +89,7 @@ function rtmedia_transcoding_get_video_thumb_meta_key(){
  *
  * @return  array
  */
-function rtmedia_transcoding_get_video_thumbs( $post_id ){
+function rtmedia_transcoding_get_video_thumbs( $post_id ) {
 	return maybe_unserialize( get_post_meta( $post_id, rtmedia_transcoding_get_video_thumb_meta_key(), true ) );
 }
 
@@ -100,14 +100,16 @@ function rtmedia_transcoding_get_video_thumbs( $post_id ){
  *
  * @return  boolean
  */
-function rtmedia_transcoding_can_process(){
+function rtmedia_transcoding_can_process() {
 	$can_process = false;
 
-	if( ! empty( rtmedia_transcoding_get_api_key() ) ){
+	$api_key = rtmedia_transcoding_get_api_key();
+
+	if ( ! empty( $api_key ) ) {
 		$can_process = true;
 	}
 
-	if( rtmedia_transcoding_get_remain_usage() > 0 ){
+	if ( rtmedia_transcoding_get_remain_usage() > 0 ) {
 		$can_process = true;
 	}
 
@@ -123,7 +125,7 @@ function rtmedia_transcoding_can_process(){
  *
  * @return  integer
  */
-function rtmedia_transcoding_get_remain_usage( $api_key = false ){
+function rtmedia_transcoding_get_remain_usage( $api_key = false ) {
 	$remain = 0;
 	$usage_info = rtmedia_transcoding_get_option( 'rtmedia-encoding-usage', array() );
 
