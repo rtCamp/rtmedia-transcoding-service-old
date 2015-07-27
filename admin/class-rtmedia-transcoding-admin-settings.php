@@ -81,10 +81,10 @@ class RTMedia_Transcoding_Admin_Settings {
 				?>
 				<div class="rtm-transcoding-api-key">
 					<label for="new-api-key"><?php _e( 'Enter API KEY', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?></label>
-					<input id="new-api-key" type="text" name="new-api-key" value="<?php echo $this->stored_api_key; ?>"
+					<input id="new-api-key" type="text" name="new-api-key" value="<?php echo esc_attr( $this->stored_api_key ); ?>"
 					       size="60"/>
 					<input type="submit" id="api-key-submit" name="api-key-submit"
-					       value="<?php echo __( 'Save Key', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?>"
+					       value="<?php esc_attr_e( 'Save Key', RTMEDIA_TRANSCODING_TEXT_DOMAIN ); ?>"
 					       class="button-primary"/>
 
 					<div class="rtm-transcoding-new-key-spinner spinner"></div>
@@ -216,32 +216,32 @@ class RTMedia_Transcoding_Admin_Settings {
 						  <p><textarea rows="3" id="rtm-transcoding-unsubscribe-note"></textarea></p>
 					</div>';
 		} else {
-			$form = '<form method="post" action="' . $action . '" class="paypal-button" target="_top">
+			$form = '<form method="post" action="' . esc_attr( $action ). '" class="paypal-button" target="_top">
                         <input type="hidden" name="button" value="subscribe">
-                        <input type="hidden" name="item_name" value="' . ucfirst( $name ) . '">
+                        <input type="hidden" name="item_name" value="' . esc_attr( ucfirst( $name ) ) . '">
 
                         <input type="hidden" name="currency_code" value="USD">
 
 
-                        <input type="hidden" name="a3" value="' . $price . '">
+                        <input type="hidden" name="a3" value="' . esc_attr( $price ) . '">
                         <input type="hidden" name="p3" value="1">
                         <input type="hidden" name="t3" value="M">
 
                         <input type="hidden" name="cmd" value="_xclick-subscriptions">
 
                         <!-- Merchant ID -->
-                        <input type="hidden" name="business" value="' . $this->merchant_id . '">
+                        <input type="hidden" name="business" value="' . esc_attr( $this->merchant_id ) . '">
 
 
-                        <input type="hidden" name="custom" value="' . $return_page . '">
+                        <input type="hidden" name="custom" value="' . esc_attr( $return_page ) . '">
 
                         <!-- Flag to no shipping -->
                         <input type="hidden" name="no_shipping" value="1">
 
-                        <input type="hidden" name="notify_url" value="' . trailingslashit( $this->api_url ) . 'subscribe/paypal">
+                        <input type="hidden" name="notify_url" value="' . esc_attr( trailingslashit( $this->api_url ) ) . 'subscribe/paypal">
 
                         <!-- Flag to post payment return url -->
-                        <input type="hidden" name="return" value="' . trailingslashit( $this->api_url ) . 'payment/process">
+                        <input type="hidden" name="return" value="' . esc_attr( trailingslashit( $this->api_url ) ) . 'payment/process">
 
 
                         <!-- Flag to post payment data to given return url -->
