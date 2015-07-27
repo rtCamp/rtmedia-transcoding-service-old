@@ -8,7 +8,7 @@
  * @subpackage  RTMedia_Transcoding/includes
  */
 
-/*
+/**
  * This file will handle all the processing for file transcoding.
  *
  * @package     RTMedia_Transcoding
@@ -18,7 +18,7 @@
 
 class RTMedia_Transcoding_Process {
 
-	/*
+	/**
 	 * URL of transcoding service
 	 *
 	 * @since   1.0
@@ -27,7 +27,7 @@ class RTMedia_Transcoding_Process {
 
 	protected $api_url = 'http://api.rtcamp.com/';
 
-	/*
+	/**
 	 * It will be in use while handling the callback from transcoding server to store the already attached file info
 	 *
 	 * @since   1.0
@@ -35,7 +35,7 @@ class RTMedia_Transcoding_Process {
 	 */
 	public $post_obj;
 
-	/*
+	/**
 	 * Send file to transcoding server
 	 *
 	 * @since   1.0
@@ -97,7 +97,7 @@ class RTMedia_Transcoding_Process {
 		return $data;
 	}
 
-	/*
+	/**
 	 * Save transcoded file from transcoding server and update post meta
 	 *
 	 * @since   1.0
@@ -181,7 +181,7 @@ class RTMedia_Transcoding_Process {
 		}
 	}
 
-	/*
+	/**
 	 * Update transcoding service usage quota
 	 *
 	 * @since   1.0
@@ -206,7 +206,7 @@ class RTMedia_Transcoding_Process {
 		return $usage_info;
 	}
 
-	/*
+	/**
 	 * Delete attached file
 	 *
 	 * @since   1.0
@@ -222,7 +222,7 @@ class RTMedia_Transcoding_Process {
 		do_action( 'rtmedia_transcoding_after_delete_attached_file', $post_id );
 	}
 
-	/*
+	/**
 	 * Modify upload directory as per the old file
 	 * Hooked into 'upload_dir'
 	 *
@@ -230,7 +230,7 @@ class RTMedia_Transcoding_Process {
 	 * @return  string
 	 */
 	public function modify_upload_dir( $up_dir ) {
-		/*
+		/**
 		 * replace path and url with the new value
 		 * Basically, remove file name from path and URL
 		 */
@@ -240,7 +240,7 @@ class RTMedia_Transcoding_Process {
 		return $up_dir;
 	}
 
-	/*
+	/**
 	 * Save thumbnails of media from transcoding server
 	 *
 	 * @since   1.0

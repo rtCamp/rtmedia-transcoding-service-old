@@ -38,7 +38,7 @@ class RTMedia_Transcoding_Admin {
 	 */
 	private $version;
 
-	/*
+	/**
 	 * Settings page class object
 	 *
 	 * @since   1.0
@@ -59,7 +59,7 @@ class RTMedia_Transcoding_Admin {
 		$this->settings_page = new RTMedia_Transcoding_Admin_Settings();
 	}
 
-	/*
+	/**
 	 * Add plugin settings page
 	 *
 	 * @since   1.0
@@ -68,7 +68,7 @@ class RTMedia_Transcoding_Admin {
 		add_options_page( __( 'Transcoding Settings', RTMEDIA_TRANSCODING_TEXT_DOMAIN ), __( 'Transcoding Settings', RTMEDIA_TRANSCODING_TEXT_DOMAIN ), 'manage_options', 'rtmedia-transcoding-settings', array( $this, 'settings_page' ) );
 	}
 
-	/*
+	/**
 	 * admin_init functions
 	 * register settings and add settings sections and fields
 	 *
@@ -98,7 +98,7 @@ class RTMedia_Transcoding_Admin {
 		wp_enqueue_script( $this->plugin_name, RTMEDIA_TRANSCODING_URL . 'admin/js/rtmedia-transcoding-admin' . $suffix . '.js', array( 'jquery' ), $this->version, false );
 	}
 
-	/*
+	/**
 	 * Settings page content
 	 *
 	 * @since   1.0

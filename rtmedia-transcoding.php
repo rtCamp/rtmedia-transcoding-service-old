@@ -71,12 +71,12 @@ if ( ! defined( 'RTMEDIA_TRANSCODING_TEXT_DOMAIN' ) ) {
 }
 
 
-/*
+/**
  * include plugin main class file
  */
 require_once RTMEDIA_TRANSCODING_PATH . 'includes/class-rtmedia-transcoding.php';
 
-/*
+/**
  * Let's rock n roll !
  *
  * @since 1.0

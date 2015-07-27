@@ -41,7 +41,7 @@ class RTMedia_Transcoding {
 	protected $plugin_name;
 
 
-	/*
+	/**
 	 * Define the core functionality of the plugin.
 	 *
 	 * Set the plugin name and the plugin version that can be used throughout the plugin.
@@ -57,7 +57,7 @@ class RTMedia_Transcoding {
 		$this->define_process_hooks();
 	}
 
-	/*
+	/**
 	 * Load the required dependencies for this plugin.
 	 *
 	 * @since   1.0
@@ -65,7 +65,7 @@ class RTMedia_Transcoding {
 	 */
 	private function load_dependencies() {
 
-		/*
+		/**
 		 * This file contains the common helper functions.
 		 */
 		require_once( RTMEDIA_TRANSCODING_PATH . 'includes/rtmedia-transcoding-functions.php' );
@@ -80,12 +80,12 @@ class RTMedia_Transcoding {
 		 */
 		require_once( RTMEDIA_TRANSCODING_PATH . 'admin/class-rtmedia-transcoding-admin.php' );
 
-		/*
+		/**
 		 * The class responsible for settings page content
 		 */
 		require_once( RTMEDIA_TRANSCODING_PATH . 'admin/class-rtmedia-transcoding-admin-settings.php' );
 
-		/*
+		/**
 		 * The class responsible for all the core functionality
 		 */
 		require_once( RTMEDIA_TRANSCODING_PATH . 'includes/class-rtmedia-transcoding-process.php' );
@@ -93,7 +93,7 @@ class RTMedia_Transcoding {
 		$this->loader = new RTMedia_Transcoding_Loader();
 	}
 
-	/*
+	/**
 	 * Register all of the hooks related to the admin area functionality
 	 * of the plugin.
 	 *
@@ -113,7 +113,7 @@ class RTMedia_Transcoding {
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 	}
 
-	/*
+	/**
 	 * Register all the hooks related to transcoding process
 	 *
 	 * @since   1.0
@@ -122,7 +122,7 @@ class RTMedia_Transcoding {
 	private function define_process_hooks() {
 		$process = new RTMedia_Transcoding_Process();
 
-		/*
+		/**
 		 * Hook into wp_generate_attachment_metadata to process the file for transcoding
 		 *
 		 * Here, we could have used add_attchment hook as well but some plugin like Amazon S3
@@ -132,7 +132,7 @@ class RTMedia_Transcoding {
 		 */
 		$this->loader->add_filter( 'wp_generate_attachment_metadata', $process, 'do_transcoding', 999, 2 );
 
-		/*
+		/**
 		 * Hook into "init" action to handle the call back from transcoding server.
 		 */
 		$this->loader->add_action( 'init', $process, 'handle_callback' );

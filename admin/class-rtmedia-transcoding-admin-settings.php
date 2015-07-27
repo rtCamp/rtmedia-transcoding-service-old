@@ -13,7 +13,7 @@
 
 class RTMedia_Transcoding_Admin_Settings {
 
-	/*
+	/**
 	 * API url to which file will sent for transcoding
 	 *
 	 * @since   1.0
@@ -21,7 +21,7 @@ class RTMedia_Transcoding_Admin_Settings {
 	 */
 	protected $api_url = 'http://api.rtcamp.com/';
 
-	/*
+	/**
 	 * Paypal sandbox testing flag
 	 *
 	 * @since   1.0
@@ -29,7 +29,7 @@ class RTMedia_Transcoding_Admin_Settings {
 	 */
 	protected $sandbox_testing = 0;
 
-	/*
+	/**
 	 * Paypal metchant email id
 	 *
 	 * @since   1.0
@@ -37,7 +37,7 @@ class RTMedia_Transcoding_Admin_Settings {
 	 */
 	protected $merchant_id = 'paypal@rtcamp.com';
 
-	/*
+	/**
 	 * API key for transcoding service
 	 *
 	 * @since   1.0
@@ -45,13 +45,13 @@ class RTMedia_Transcoding_Admin_Settings {
 	 */
 	public $api_key = false;
 
-	/*
+	/**
 	 * Stored API key used for reference purpose
 	 */
 	public $stored_api_key = false;
 
 
-	/*
+	/**
 	 * Initialize class variables
 	 */
 	public function __construct() {
@@ -67,7 +67,7 @@ class RTMedia_Transcoding_Admin_Settings {
 		}
 	}
 
-	/*
+	/**
 	 * Render settings page
 	 */
 	public function render() {
